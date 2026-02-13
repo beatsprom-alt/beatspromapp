@@ -111,37 +111,50 @@
     let farmInterval;
 
     function initApp() {
-        // Принудительно читаем из облака при каждом входе
+        // Сначала пробуем взять время из локальной памяти (самый быстрый способ)
+        let startTime = localStorage.getItem('local_start_time');
+        let savedBalance = localStorage.getItem('local_balance') || '500';
+
+        document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
+
+        // Затем запрашиваем облако для синхронизации
         tg.CloudStorage.getItems(['bal', 'start'], (err, values) => {
-            let savedBalance = values.bal || '500';
-            let startTime = values.start;
-
-            document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
-
-            if (startTime && startTime !== "null" && startTime !== "undefined") {
-                const now = Date.now();
-                const elapsed = now - parseInt(startTime);
-
-                if (elapsed >= FARM_DURATION) {
-                    showClaimButton();
-                } else {
-                    resumeFarming(parseInt(startTime));
-                }
-            } else {
-                showStartButton();
+            if (values.bal) {
+                savedBalance = values.bal;
+                localStorage.setItem('local_balance', savedBalance);
+                document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
             }
+            if (values.start && values.start !== "null") {
+                startTime = values.start;
+                localStorage.setItem('local_start_time', startTime);
+            }
+            
+            // Запускаем проверку после того, как получили данные
+            checkMiningStatus(startTime);
         });
+    }
+
+    function checkMiningStatus(startTime) {
+        if (startTime && startTime !== "null") {
+            const now = Date.now();
+            const elapsed = now - parseInt(startTime);
+
+            if (elapsed >= FARM_DURATION) {
+                showClaimButton();
+            } else {
+                resumeFarming(parseInt(startTime));
+            }
+        } else {
+            showStartButton();
+        }
     }
 
     function startFarming() {
         const now = Date.now().toString();
-        // Сначала сохраняем в облако, потом запускаем визуально
+        // Сохраняем везде сразу
+        localStorage.setItem('local_start_time', now);
         tg.CloudStorage.setItem('start', now, (err, success) => {
-            if (success) {
-                resumeFarming(parseInt(now));
-            } else {
-                alert("Cloud Sync Error. Try again.");
-            }
+            resumeFarming(parseInt(now));
         });
     }
 
@@ -155,14 +168,12 @@
             const now = Date.now();
             const elapsed = now - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
-            
             const currentMined = (elapsed / 1000) * REWARD_PER_SEC;
+
             document.getElementById('farm-amount').innerText = currentMined.toFixed(2);
-            
             const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
             const m = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
-            
             document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
 
@@ -186,10 +197,12 @@
         tg.CloudStorage.getItems(['bal'], (err, values) => {
             let currentBal = parseFloat(values.bal || '500');
             currentBal += amount;
+            // Обновляем локально и в облаке
+            localStorage.setItem('local_balance', currentBal.toString());
+            localStorage.removeItem('local_start_time');
             tg.CloudStorage.setItem('bal', currentBal.toString());
-            // Обнуляем старт ПРЯМО В ОБЛАКЕ
-            tg.CloudStorage.setItem('start', "null", (err, success) => {
-                location.reload(); // Принудительно обновляем страницу после клейма
+            tg.CloudStorage.setItem('start', "null", () => {
+                location.reload();
             });
         });
     }
@@ -205,6 +218,7 @@
     initApp();
 </script>
 </html>
+
 
 
 
