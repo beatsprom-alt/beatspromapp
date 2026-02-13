@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final') center center no-repeat;
+            background: #000 url('bg.jpg?v=final_link') center center no-repeat;
             background-size: cover;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
@@ -36,7 +36,6 @@
         .balance { font-size: 42px; color: #fff; margin: 5px 0; font-weight: bold; }
         .token-name { color: #ff0000; font-size: 18px; }
 
-        /* Компактная сетка соцсетей */
         .social-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -48,11 +47,10 @@
             border: 1px solid #333; padding: 10px 0;
             background: rgba(255, 255, 255, 0.05);
             text-transform: uppercase; transition: 0.3s;
-            display: block;
+            cursor: pointer;
         }
         .social-btn:hover { border-color: #ff0000; color: #ff0000; }
 
-        /* Зарезервированная зона для майнинга */
         .mining-zone {
             margin-top: 10px;
             height: 80px;
@@ -74,10 +72,10 @@
             <div class="balance">500 <span class="token-name">$CBP</span></div>
 
             <div class="social-grid">
-                <a href="#" class="social-btn">X</a>
-                <a href="#" class="social-btn">IG</a>
-                <a href="#" class="social-btn">YT</a>
-                <a href="#" class="social-btn">TT</a>
+                <div class="social-btn" onclick="openLink('https://x.com/beatspromc')">X</div>
+                <div class="social-btn" onclick="openLink('https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm')">IG</div>
+                <div class="social-btn" onclick="openLink('https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT')">YT</div>
+                <div class="social-btn" onclick="openLink('https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P')">TT</div>
             </div>
 
             <div class="mining-zone">
@@ -91,6 +89,11 @@
         tg.expand(); tg.ready();
         const user = tg.initDataUnsafe?.user;
         document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
+
+        // Функция для безопасного открытия ссылок в Telegram
+        function openLink(url) {
+            tg.openLink(url);
+        }
     </script>
 </body>
 </html>
