@@ -104,54 +104,52 @@
     tg.expand();
     tg.ready();
 
-    // 1. Отображаем имя
     const user = tg.initDataUnsafe?.user;
     document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
 
     function forceOpen(url) { tg.openLink(url, {try_instant_view: false}); }
 
-    // 2. Настройки фарминга
-    const FARM_DURATION = 8 * 60 * 60 * 1000; // 8 часов
+    const FARM_DURATION = 8 * 60 * 60 * 1000; 
     const REWARD_PER_SEC = 0.01; 
     let farmInterval;
 
-    // ГЛАВНАЯ ФУНКЦИЯ ПРОВЕРКИ СОСТОЯНИЯ
+    // ГЛАВНАЯ ФУНКЦИЯ: ЧИТАЕМ ИЗ ОБЛАКА TELEGRAM
     function initApp() {
-        // Загружаем баланс (если нет — ставим 500)
-        let savedBalance = localStorage.getItem('syndicate_balance');
-        if (savedBalance === null) {
-            localStorage.setItem('syndicate_balance', '500');
-            savedBalance = '500';
-        }
-        document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
+        // Запрашиваем данные из облака
+        tg.CloudStorage.getItems(['bal', 'start'], (err, values) => {
+            let savedBalance = values.bal || '500';
+            let startTime = values.start || null;
 
-        // Проверяем, запущен ли майнинг
-        const startTime = localStorage.getItem('mining_started_at');
-        if (startTime) {
-            const now = Date.now();
-            const elapsed = now - parseInt(startTime);
+            document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
 
-            if (elapsed >= FARM_DURATION) {
-                showClaimButton(); // Время вышло, можно забирать
+            if (startTime) {
+                const now = Date.now();
+                const elapsed = now - parseInt(startTime);
+                if (elapsed >= FARM_DURATION) {
+                    showClaimButton();
+                } else {
+                    resumeFarming(parseInt(startTime));
+                }
             } else {
-                resumeFarming(parseInt(startTime)); // Время еще идет
+                showStartButton();
             }
-        } else {
-            showStartButton(); // Майнинг еще не запускали
-        }
+        });
     }
 
     function showStartButton() {
-        document.getElementById('farm-btn').style.display = 'block';
-        document.getElementById('farm-btn').innerText = "START PRODUCTION";
+        const btn = document.getElementById('farm-btn');
+        btn.style.display = 'block';
+        btn.innerText = "START PRODUCTION";
         document.getElementById('mining-info').style.display = 'none';
-        document.getElementById('farm-btn').onclick = startFarming;
+        btn.onclick = startFarming;
     }
 
     function startFarming() {
-        const now = Date.now();
-        localStorage.setItem('mining_started_at', now.toString());
-        resumeFarming(now);
+        const now = Date.now().toString();
+        // Сохраняем в облако время старта
+        tg.CloudStorage.setItem('start', now, (err, success) => {
+            if (success) resumeFarming(parseInt(now));
+        });
     }
 
     function resumeFarming(startTime) {
@@ -164,20 +162,15 @@
             const now = Date.now();
             const elapsed = now - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
-
-            // Визуальный расчет текущей добычи
             const currentMined = (elapsed / 1000) * REWARD_PER_SEC;
+
             document.getElementById('farm-amount').innerText = currentMined.toFixed(2);
             
-            // Обновление таймера
-            const hours = Math.floor(timeLeft / (1000 * 60 * 60)).toString().padStart(2, '0');
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000).toString().padStart(2, '0');
-            document.getElementById('timer').innerText = `${hours}:${minutes}:${seconds}`;
-
-            // Прогресс-бар
-            const progress = Math.min(100, (elapsed / FARM_DURATION) * 100);
-            document.getElementById('progress-fill').style.width = progress + '%';
+            const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
 
             if (elapsed >= FARM_DURATION) {
                 clearInterval(farmInterval);
@@ -187,7 +180,7 @@
     }
 
     function showClaimButton() {
-        const totalReward = (FARM_DURATION / 1000) * REWARD_PER_SEC; // Фикс награда за 8 часов
+        const totalReward = (FARM_DURATION / 1000) * REWARD_PER_SEC;
         document.getElementById('mining-info').style.display = 'none';
         const btn = document.getElementById('farm-btn');
         btn.style.display = 'block';
@@ -196,16 +189,21 @@
     }
 
     function claimReward(amount) {
-        let currentBal = parseFloat(localStorage.getItem('syndicate_balance'));
-        currentBal += amount;
-        localStorage.setItem('syndicate_balance', currentBal.toString());
-        localStorage.removeItem('mining_started_at');
-        initApp(); // Перезапуск интерфейса
+        tg.CloudStorage.getItems(['bal'], (err, values) => {
+            let currentBal = parseFloat(values.bal || '500');
+            currentBal += amount;
+            
+            // Сохраняем новый баланс и удаляем время старта в облаке
+            tg.CloudStorage.setItem('bal', currentBal.toString());
+            tg.CloudStorage.removeItem('start', (err, success) => {
+                initApp();
+            });
+        });
     }
 
-    // Запускаем всё при загрузке
     initApp();
 </script>
 </html>
+
 
 
