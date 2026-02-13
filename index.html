@@ -101,12 +101,9 @@
 
    <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.ready();
+    tg.expand(); tg.ready();
 
-    const user = tg.initDataUnsafe?.user;
-    document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
-
+    document.getElementById('username').innerText = tg.initDataUnsafe?.user?.first_name || "BP";
     function forceOpen(url) { tg.openLink(url, {try_instant_view: false}); }
 
     const FARM_DURATION = 8 * 60 * 60 * 1000; 
@@ -114,41 +111,37 @@
     let farmInterval;
 
     function initApp() {
-        // Запрашиваем из облака и баланс, и время старта
+        // Принудительно читаем из облака при каждом входе
         tg.CloudStorage.getItems(['bal', 'start'], (err, values) => {
             let savedBalance = values.bal || '500';
             let startTime = values.start;
 
             document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
 
-            if (startTime && startTime !== "null") {
+            if (startTime && startTime !== "null" && startTime !== "undefined") {
                 const now = Date.now();
                 const elapsed = now - parseInt(startTime);
 
                 if (elapsed >= FARM_DURATION) {
-                    showClaimButton(); // Время вышло пока нас не было
+                    showClaimButton();
                 } else {
-                    resumeFarming(parseInt(startTime)); // Продолжаем с нужного момента
+                    resumeFarming(parseInt(startTime));
                 }
             } else {
-                showStartButton(); // Ничего не запущено
+                showStartButton();
             }
         });
     }
 
-    function showStartButton() {
-        const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = "START PRODUCTION";
-        document.getElementById('mining-info').style.display = 'none';
-        btn.onclick = startFarming;
-    }
-
     function startFarming() {
         const now = Date.now().toString();
-        // Сохраняем время в облако ПЕРЕД запуском
+        // Сначала сохраняем в облако, потом запускаем визуально
         tg.CloudStorage.setItem('start', now, (err, success) => {
-            if (success) resumeFarming(parseInt(now));
+            if (success) {
+                resumeFarming(parseInt(now));
+            } else {
+                alert("Cloud Sync Error. Try again.");
+            }
         });
     }
 
@@ -163,11 +156,9 @@
             const elapsed = now - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
             
-            // Считаем прогресс сессии
             const currentMined = (elapsed / 1000) * REWARD_PER_SEC;
             document.getElementById('farm-amount').innerText = currentMined.toFixed(2);
             
-            // Форматируем таймер
             const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
             const m = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
@@ -195,18 +186,26 @@
         tg.CloudStorage.getItems(['bal'], (err, values) => {
             let currentBal = parseFloat(values.bal || '500');
             currentBal += amount;
-            
-            // Сбрасываем время старта в "null" и обновляем баланс
             tg.CloudStorage.setItem('bal', currentBal.toString());
+            // Обнуляем старт ПРЯМО В ОБЛАКЕ
             tg.CloudStorage.setItem('start', "null", (err, success) => {
-                initApp();
+                location.reload(); // Принудительно обновляем страницу после клейма
             });
         });
+    }
+
+    function showStartButton() {
+        const btn = document.getElementById('farm-btn');
+        btn.style.display = 'block';
+        btn.innerText = "START PRODUCTION";
+        document.getElementById('mining-info').style.display = 'none';
+        btn.onclick = startFarming;
     }
 
     initApp();
 </script>
 </html>
+
 
 
 
