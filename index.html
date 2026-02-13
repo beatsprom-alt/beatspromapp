@@ -100,29 +100,92 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); tg.ready();
-        document.getElementById('username').innerText = tg.initDataUnsafe?.user?.first_name || "BP";
+    const tg = window.Telegram.WebApp;
+    tg.expand(); tg.ready();
+    document.getElementById('username').innerText = tg.initDataUnsafe?.user?.first_name || "BP";
 
-        function forceOpen(url) { tg.openLink(url); }
+    function forceOpen(url) { tg.openLink(url); }
 
-        let balance = 500;
-        let farmAmount = 0;
-        let timeLeft = 8 * 60 * 60;
+    // УМНАЯ ЛОГИКА ФАРМИНГА
+    let balance = parseFloat(localStorage.getItem('cbp_balance')) || 500;
+    let farmAmount = 0;
+    const duration = 8 * 60 * 60 * 1000; // 8 часов в миллисекундах
+    let farmInterval;
 
-        function startFarming() {
-            document.getElementById('farm-btn').style.display = 'none';
-            document.getElementById('mining-info').style.display = 'block';
-            setInterval(() => {
-                if(timeLeft > 0) {
-                    timeLeft--;
-                    farmAmount += 0.01;
-                    document.getElementById('farm-amount').innerText = farmAmount.toFixed(2);
-                    document.getElementById('timer').innerText = new Date(timeLeft * 1000).toISOString().substr(11, 8);
-                    document.getElementById('progress-fill').style.width = ((28800 - timeLeft) / 28800 * 100) + '%';
-                }
-            }, 1000);
+    document.getElementById('main-balance').innerText = Math.floor(balance);
+
+    function updateUI() {
+        const startTime = localStorage.getItem('mining_start_time');
+        if (!startTime) {
+            document.getElementById('farm-btn').style.display = 'block';
+            document.getElementById('mining-info').style.display = 'none';
+            return;
         }
-    </script>
+
+        const now = Date.now();
+        const elapsed = now - parseInt(startTime);
+        
+        if (elapsed >= duration) {
+            // Время вышло — пора забирать (Claim)
+            finishFarming(80.00); // Максимум за 8 часов (например, 80 монет)
+        } else {
+            // Процесс идет
+            farmingActive(startTime);
+        }
+    }
+
+    function startFarming() {
+        const startTime = Date.now();
+        localStorage.setItem('mining_start_time', startTime);
+        farmingActive(startTime);
+    }
+
+    function farmingActive(startTime) {
+        document.getElementById('farm-btn').style.display = 'none';
+        document.getElementById('mining-info').style.display = 'block';
+        
+        if(farmInterval) clearInterval(farmInterval);
+        
+        farmInterval = setInterval(() => {
+            const now = Date.now();
+            const elapsed = now - parseInt(startTime);
+            const timeLeft = Math.max(0, duration - elapsed);
+            
+            // Считаем доход: 0.01 монеты в секунду (36 монет за час, 288 за 8ч)
+            farmAmount = (elapsed / 1000) * 0.01; 
+            
+            document.getElementById('farm-amount').innerText = farmAmount.toFixed(2);
+            document.getElementById('timer').innerText = new Date(timeLeft).toISOString().substr(11, 8);
+            document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / duration) * 100) + '%';
+
+            if (elapsed >= duration) {
+                clearInterval(farmInterval);
+                finishFarming(farmAmount);
+            }
+        }, 1000);
+    }
+
+    function finishFarming(finalAmount) {
+        const btn = document.getElementById('farm-btn');
+        btn.style.display = 'block';
+        btn.innerText = "CLAIM " + finalAmount.toFixed(2) + " $CBP";
+        document.getElementById('mining-info').style.display = 'none';
+        
+        btn.onclick = () => {
+            balance += finalAmount;
+            localStorage.setItem('cbp_balance', balance);
+            document.getElementById('main-balance').innerText = Math.floor(balance);
+            
+            localStorage.removeItem('mining_start_time');
+            btn.innerText = "Start Production";
+            btn.onclick = startFarming;
+            updateUI();
+        };
+    }
+
+    // Запуск проверки при входе
+    updateUI();
+</script>
 </body>
 </html>
+
