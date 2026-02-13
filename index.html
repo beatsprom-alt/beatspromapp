@@ -66,6 +66,7 @@
             padding: 12px 20px; font-family: inherit; font-weight: bold;
             cursor: pointer; text-transform: uppercase; width: 85%;
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            display: none; /* Скрыто по умолчанию */
         }
         .timer-text { font-size: 14px; margin-top: 8px; color: #ff0000; font-weight: bold; }
         .progress-bar { 
@@ -76,6 +77,8 @@
             position: relative;
         }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: 0.5s; }
+        #loading-text { font-size: 10px; color: #666; animation: blink 1.5s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -96,6 +99,8 @@
             </div>
 
             <div class="mining-zone">
+                <div id="loading-text">CONNECTING TO SYNDICATE...</div>
+                
                 <button id="farm-btn" class="farm-btn" onclick="startFarming()">Start Production</button>
                 <div id="mining-info" style="display:none; width: 100%;">
                     <div class="label-text" style="color: #888;">PRODUCING: <span id="farm-amount" style="color:#fff">0.00</span></div>
@@ -107,7 +112,6 @@
     </div>
 
 <script>
-    // Твой Firebase конфиг
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -133,7 +137,12 @@
 
     function initApp() {
         const userRef = database.ref('users/' + userId);
+        
+        // Слушаем базу данных
         userRef.on('value', (snapshot) => {
+            // Убираем текст загрузки как только получили ЛЮБОЙ ответ
+            document.getElementById('loading-text').style.display = 'none';
+            
             const data = snapshot.val();
             if (!data) {
                 userRef.set({ name: userName, balance: 500, startTime: null });
@@ -147,9 +156,14 @@
         document.getElementById('main-balance').innerText = Math.floor(data.balance);
         if (data.startTime && data.startTime !== "null") {
             const elapsed = Date.now() - data.startTime;
-            if (elapsed >= FARM_DURATION) { showClaimButton(); } 
-            else { resumeFarming(data.startTime); }
-        } else { showStartButton(); }
+            if (elapsed >= FARM_DURATION) { 
+                showClaimButton(); 
+            } else { 
+                resumeFarming(data.startTime); 
+            }
+        } else { 
+            showStartButton(); 
+        }
     }
 
     function startFarming() {
@@ -172,7 +186,10 @@
             document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
 
-            if (elapsed >= FARM_DURATION) { clearInterval(farmInterval); showClaimButton(); }
+            if (elapsed >= FARM_DURATION) { 
+                clearInterval(farmInterval); 
+                showClaimButton(); 
+            }
         }, 1000);
     }
 
