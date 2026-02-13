@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final_mobile_fix') center center no-repeat;
+            background: #000 url('bg.jpg?v=final_fix_v3') center center no-repeat;
             background-size: cover;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
@@ -43,10 +43,10 @@
             margin: 20px 0;
         }
         .social-btn {
-            color: #fff; text-decoration: none; border: 1px solid #333; 
-            padding: 12px 0; background: rgba(255, 255, 255, 0.05);
+            color: #fff; border: 1px solid #333; padding: 12px 0;
+            background: rgba(255, 255, 255, 0.05);
             text-transform: uppercase; font-size: 9px;
-            display: block; transition: 0.3s;
+            cursor: pointer; transition: 0.3s;
         }
         .social-btn:active { border-color: #ff0000; color: #ff0000; }
 
@@ -70,10 +70,10 @@
             <div class="balance">500 <span class="token-name">$CBP</span></div>
 
             <div class="social-grid">
-                <a href="https://x.com/beatspromc" target="_system" class="social-btn">X</a>
-                <a href="https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm" target="_system" class="social-btn">IG</a>
-                <a href="https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT" target="_system" class="social-btn">YT</a>
-                <a href="https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P" target="_system" class="social-btn">TT</a>
+                <div class="social-btn" onclick="forceOpen('https://x.com/beatspromc')">X</div>
+                <div class="social-btn" onclick="forceOpen('https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm')">IG</div>
+                <div class="social-btn" onclick="forceOpen('https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT')">YT</div>
+                <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P')">TT</div>
             </div>
 
             <div class="mining-zone">
@@ -90,14 +90,10 @@
         const user = tg.initDataUnsafe?.user;
         document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
 
-        // Принудительно заставляем Telegram открывать ссылки во внешнем браузере
-        document.querySelectorAll('.social-btn').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = this.getAttribute('href');
-                tg.openLink(url);
-            });
-        });
+        function forceOpen(url) {
+            // Используем нативный метод открытия внешних ссылок
+            tg.openLink(url, {try_instant_view: false});
+        }
     </script>
 </body>
 </html>
