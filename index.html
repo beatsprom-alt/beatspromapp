@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final_fix_v3') center center no-repeat;
+            background: #000 url('bg.jpg?v=final_fix_v4') center center no-repeat;
             background-size: cover;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
@@ -18,7 +18,8 @@
         }
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 1;
+            /* Сделали фон ярче (было 0.75) */
+            background: rgba(0, 0, 0, 0.4); z-index: 1;
         }
         .content {
             position: relative; z-index: 2; text-align: center; width: 85%;
@@ -33,6 +34,10 @@
             font-size: 24px; color: #ff0000; margin-bottom: 10px;
             text-transform: uppercase; font-weight: bold;
         }
+        /* Сделали надписи ярко-белыми */
+        .label-text {
+            font-size: 10px; color: #ffffff; letter-spacing: 2px; font-weight: bold;
+        }
         .balance { font-size: 42px; color: #fff; margin: 5px 0; font-weight: bold; }
         .token-name { color: #ff0000; font-size: 18px; }
 
@@ -44,17 +49,18 @@
         }
         .social-btn {
             color: #fff; border: 1px solid #333; padding: 12px 0;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             text-transform: uppercase; font-size: 9px;
             cursor: pointer; transition: 0.3s;
+            display: block; text-decoration: none;
         }
         .social-btn:active { border-color: #ff0000; color: #ff0000; }
 
         .mining-zone {
             margin-top: 10px; height: 80px;
-            border: 1px dashed #222;
+            border: 1px dashed #444;
             display: flex; align-items: center; justify-content: center;
-            color: #333; font-size: 10px; letter-spacing: 2px;
+            color: #fff; font-size: 10px; letter-spacing: 2px;
             text-transform: uppercase;
         }
     </style>
@@ -63,10 +69,10 @@
     <div class="overlay"></div>
     <div class="content">
         <div class="status-box">
-            <div style="font-size: 10px; color: #666; letter-spacing: 2px;">IDENTIFIED MEMBER:</div>
+            <div class="label-text">IDENTIFIED MEMBER:</div>
             <div id="username" class="user-name">BP</div>
             
-            <div style="font-size: 10px; color: #444;">SECURED ASSETS:</div>
+            <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
             <div class="balance">500 <span class="token-name">$CBP</span></div>
 
             <div class="social-grid">
@@ -91,10 +97,8 @@
         document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
 
         function forceOpen(url) {
-            // Используем нативный метод открытия внешних ссылок
             tg.openLink(url, {try_instant_view: false});
         }
     </script>
 </body>
 </html>
-
