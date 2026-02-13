@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final_fix_v4') center center no-repeat;
+            background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
             background-size: cover;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
@@ -52,24 +52,23 @@
             cursor: pointer; transition: 0.3s;
             display: block; text-decoration: none;
         }
-        .social-btn:active { border-color: #ff0000; color: #ff0000; }
 
-        /* МОДУЛЬ ФАРМИНГА */
+        /* КНОПКА ФАРМИНГА */
         .mining-zone {
-            margin-top: 10px; height: 100px;
-            border: 1px solid #222;
+            margin-top: 10px; min-height: 100px;
+            border: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: rgba(255, 255, 255, 0.03);
         }
         .farm-btn {
             background: #ff0000; color: #fff; border: none;
-            padding: 12px 25px; font-family: inherit; font-weight: bold;
-            cursor: pointer; text-transform: uppercase; width: 80%;
+            padding: 12px 20px; font-family: inherit; font-weight: bold;
+            cursor: pointer; text-transform: uppercase; width: 85%;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
         }
-        .farm-btn:disabled { background: #333; color: #888; cursor: default; }
-        .timer-text { font-size: 12px; margin-top: 8px; color: #ff0000; font-weight: bold; }
-        .progress-bar { width: 80%; height: 4px; background: #222; margin-top: 10px; position: relative; }
-        .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: 0.3s; }
+        .timer-text { font-size: 14px; margin-top: 8px; color: #ff0000; font-weight: bold; }
+        .progress-bar { width: 85%; height: 6px; background: #222; margin-top: 12px; }
+        .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: 0.5s; }
     </style>
 </head>
 <body>
@@ -91,7 +90,7 @@
 
             <div class="mining-zone">
                 <button id="farm-btn" class="farm-btn" onclick="startFarming()">Start Production</button>
-                <div id="mining-info" style="display:none; width: 100%; text-align: center;">
+                <div id="mining-info" style="display:none; width: 100%;">
                     <div class="label-text" style="color: #888;">PRODUCING: <span id="farm-amount" style="color:#fff">0.00</span></div>
                     <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
                     <div id="timer" class="timer-text">08:00:00</div>
@@ -103,60 +102,26 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); tg.ready();
+        document.getElementById('username').innerText = tg.initDataUnsafe?.user?.first_name || "BP";
 
-        const user = tg.initDataUnsafe?.user;
-        document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
+        function forceOpen(url) { tg.openLink(url); }
 
-        function forceOpen(url) {
-            tg.openLink(url, {try_instant_view: false});
-        }
-
-        // ЛОГИКА ФАРМИНГА
         let balance = 500;
-        let farming = false;
         let farmAmount = 0;
-        let duration = 8 * 60 * 60; // 8 часов в секундах
-        let timeLeft = duration;
+        let timeLeft = 8 * 60 * 60;
 
         function startFarming() {
-            if (farming) return;
-            farming = true;
             document.getElementById('farm-btn').style.display = 'none';
             document.getElementById('mining-info').style.display = 'block';
-            
-            const interval = setInterval(() => {
-                timeLeft--;
-                farmAmount += 0.01; // Добавляем немного каждую секунду
-                
-                // Обновляем UI
-                document.getElementById('farm-amount').innerText = farmAmount.toFixed(2);
-                document.getElementById('timer').innerText = new Date(timeLeft * 1000).toISOString().substr(11, 8);
-                
-                let progress = ((duration - timeLeft) / duration) * 100;
-                document.getElementById('progress-fill').style.width = progress + '%';
-
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    finishFarming();
+            setInterval(() => {
+                if(timeLeft > 0) {
+                    timeLeft--;
+                    farmAmount += 0.01;
+                    document.getElementById('farm-amount').innerText = farmAmount.toFixed(2);
+                    document.getElementById('timer').innerText = new Date(timeLeft * 1000).toISOString().substr(11, 8);
+                    document.getElementById('progress-fill').style.width = ((28800 - timeLeft) / 28800 * 100) + '%';
                 }
             }, 1000);
-        }
-
-        function finishFarming() {
-            const btn = document.getElementById('farm-btn');
-            btn.innerText = "Claim " + farmAmount.toFixed(2) + " $CBP";
-            btn.style.display = 'block';
-            btn.onclick = () => {
-                balance += farmAmount;
-                document.getElementById('main-balance').innerText = Math.floor(balance);
-                // Сброс
-                farmAmount = 0;
-                timeLeft = duration;
-                farming = false;
-                btn.innerText = "Start Production";
-                btn.onclick = startFarming;
-                document.getElementById('mining-info').style.display = 'none';
-            };
         }
     </script>
 </body>
