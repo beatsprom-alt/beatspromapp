@@ -113,25 +113,25 @@
     const REWARD_PER_SEC = 0.01; 
     let farmInterval;
 
-    // ГЛАВНАЯ ФУНКЦИЯ: ЧИТАЕМ ИЗ ОБЛАКА TELEGRAM
     function initApp() {
-        // Запрашиваем данные из облака
+        // Запрашиваем из облака и баланс, и время старта
         tg.CloudStorage.getItems(['bal', 'start'], (err, values) => {
             let savedBalance = values.bal || '500';
-            let startTime = values.start || null;
+            let startTime = values.start;
 
             document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
 
-            if (startTime) {
+            if (startTime && startTime !== "null") {
                 const now = Date.now();
                 const elapsed = now - parseInt(startTime);
+
                 if (elapsed >= FARM_DURATION) {
-                    showClaimButton();
+                    showClaimButton(); // Время вышло пока нас не было
                 } else {
-                    resumeFarming(parseInt(startTime));
+                    resumeFarming(parseInt(startTime)); // Продолжаем с нужного момента
                 }
             } else {
-                showStartButton();
+                showStartButton(); // Ничего не запущено
             }
         });
     }
@@ -146,7 +146,7 @@
 
     function startFarming() {
         const now = Date.now().toString();
-        // Сохраняем в облако время старта
+        // Сохраняем время в облако ПЕРЕД запуском
         tg.CloudStorage.setItem('start', now, (err, success) => {
             if (success) resumeFarming(parseInt(now));
         });
@@ -162,13 +162,16 @@
             const now = Date.now();
             const elapsed = now - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
+            
+            // Считаем прогресс сессии
             const currentMined = (elapsed / 1000) * REWARD_PER_SEC;
-
             document.getElementById('farm-amount').innerText = currentMined.toFixed(2);
             
+            // Форматируем таймер
             const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
             const m = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
+            
             document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
 
@@ -193,9 +196,9 @@
             let currentBal = parseFloat(values.bal || '500');
             currentBal += amount;
             
-            // Сохраняем новый баланс и удаляем время старта в облаке
+            // Сбрасываем время старта в "null" и обновляем баланс
             tg.CloudStorage.setItem('bal', currentBal.toString());
-            tg.CloudStorage.removeItem('start', (err, success) => {
+            tg.CloudStorage.setItem('start', "null", (err, success) => {
                 initApp();
             });
         });
@@ -204,6 +207,7 @@
     initApp();
 </script>
 </html>
+
 
 
 
