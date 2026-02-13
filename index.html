@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beatsprom Syndicate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         body {
             margin: 0; padding: 0;
@@ -53,7 +55,6 @@
             display: block; text-decoration: none;
         }
 
-        /* КНОПКА ФАРМИНГА */
         .mining-zone {
             margin-top: 10px; min-height: 100px;
             border: 1px solid #333;
@@ -71,7 +72,7 @@
             width: 85%; 
             height: 6px; 
             background: #222; 
-            margin: 12px auto 0; /* ДОБАВИЛИ ЭТУ СТРОКУ ДЛЯ ЦЕНТРОВКИ */
+            margin: 12px auto 0;
             position: relative;
         }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: 0.5s; }
@@ -85,7 +86,7 @@
             <div id="username" class="user-name">BP</div>
             
             <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
-            <div class="balance"><span id="main-balance">500</span> <span class="token-name">$BPCxp</span></div>
+            <div class="balance"><span id="main-balance">500</span> <span class="token-name">$BPC XP</span></div>
 
             <div class="social-grid">
                 <div class="social-btn" onclick="forceOpen('https://x.com/beatspromc')">X</div>
@@ -105,111 +106,91 @@
         </div>
     </div>
 
-   <script>
+<script>
+    // Твой Firebase конфиг
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
+        authDomain: "beatspromapp.firebaseapp.com",
+        databaseURL: "https://beatspromapp-default-rtdb.firebaseio.com",
+        projectId: "beatspromapp",
+        storageBucket: "beatspromapp.firebasestorage.app",
+        messagingSenderId: "910279230250",
+        appId: "1:910279230250:web:43e40e8450589b230a5453"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
     const tg = window.Telegram.WebApp;
     tg.expand(); tg.ready();
 
-    document.getElementById('username').innerText = tg.initDataUnsafe?.user?.first_name || "BP";
-    function forceOpen(url) { tg.openLink(url, {try_instant_view: false}); }
+    const userId = tg.initDataUnsafe?.user?.id || "test_user";
+    const userName = tg.initDataUnsafe?.user?.first_name || "Member";
+    document.getElementById('username').innerText = userName;
 
     const FARM_DURATION = 8 * 60 * 60 * 1000; 
     const REWARD_PER_SEC = 0.01; 
     let farmInterval;
 
     function initApp() {
-        // Сначала пробуем взять время из локальной памяти (самый быстрый способ)
-        let startTime = localStorage.getItem('local_start_time');
-        let savedBalance = localStorage.getItem('local_balance') || '500';
-
-        document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
-
-        // Затем запрашиваем облако для синхронизации
-        tg.CloudStorage.getItems(['bal', 'start'], (err, values) => {
-            if (values.bal) {
-                savedBalance = values.bal;
-                localStorage.setItem('local_balance', savedBalance);
-                document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
+        const userRef = database.ref('users/' + userId);
+        userRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                userRef.set({ name: userName, balance: 500, startTime: null });
+            } else {
+                updateUI(data);
             }
-            if (values.start && values.start !== "null") {
-                startTime = values.start;
-                localStorage.setItem('local_start_time', startTime);
-            }
-            
-            // Запускаем проверку после того, как получили данные
-            checkMiningStatus(startTime);
         });
     }
 
-    function checkMiningStatus(startTime) {
-        if (startTime && startTime !== "null") {
-            const now = Date.now();
-            const elapsed = now - parseInt(startTime);
-
-            if (elapsed >= FARM_DURATION) {
-                showClaimButton();
-            } else {
-                resumeFarming(parseInt(startTime));
-            }
-        } else {
-            showStartButton();
-        }
+    function updateUI(data) {
+        document.getElementById('main-balance').innerText = Math.floor(data.balance);
+        if (data.startTime && data.startTime !== "null") {
+            const elapsed = Date.now() - data.startTime;
+            if (elapsed >= FARM_DURATION) { showClaimButton(); } 
+            else { resumeFarming(data.startTime); }
+        } else { showStartButton(); }
     }
 
     function startFarming() {
-        const now = Date.now().toString();
-        // Сохраняем везде сразу
-        localStorage.setItem('local_start_time', now);
-        tg.CloudStorage.setItem('start', now, (err, success) => {
-            resumeFarming(parseInt(now));
-        });
+        tg.HapticFeedback.impactOccurred('medium');
+        database.ref('users/' + userId).update({ startTime: Date.now() });
     }
 
     function resumeFarming(startTime) {
         document.getElementById('farm-btn').style.display = 'none';
         document.getElementById('mining-info').style.display = 'block';
-
         if (farmInterval) clearInterval(farmInterval);
-
         farmInterval = setInterval(() => {
-            const now = Date.now();
-            const elapsed = now - startTime;
+            const elapsed = Date.now() - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
-            const currentMined = (elapsed / 1000) * REWARD_PER_SEC;
-
-            document.getElementById('farm-amount').innerText = currentMined.toFixed(2);
+            document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
+            
             const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
             const m = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
 
-            if (elapsed >= FARM_DURATION) {
-                clearInterval(farmInterval);
-                showClaimButton();
-            }
+            if (elapsed >= FARM_DURATION) { clearInterval(farmInterval); showClaimButton(); }
         }, 1000);
     }
 
     function showClaimButton() {
-        const totalReward = (FARM_DURATION / 1000) * REWARD_PER_SEC;
         document.getElementById('mining-info').style.display = 'none';
         const btn = document.getElementById('farm-btn');
         btn.style.display = 'block';
-        btn.innerText = `CLAIM ${totalReward.toFixed(2)} $BPCxp`;
-        btn.onclick = () => claimReward(totalReward);
+        btn.innerText = `CLAIM ${(FARM_DURATION / 1000 * REWARD_PER_SEC).toFixed(2)} $BPC XP`;
+        btn.onclick = claimReward;
     }
 
-    function claimReward(amount) {
-        tg.CloudStorage.getItems(['bal'], (err, values) => {
-            let currentBal = parseFloat(values.bal || '500');
-            currentBal += amount;
-            // Обновляем локально и в облаке
-            localStorage.setItem('local_balance', currentBal.toString());
-            localStorage.removeItem('local_start_time');
-            tg.CloudStorage.setItem('bal', currentBal.toString());
-            tg.CloudStorage.setItem('start', "null", () => {
-                location.reload();
-            });
+    function claimReward() {
+        tg.HapticFeedback.notificationOccurred('success');
+        const userRef = database.ref('users/' + userId);
+        userRef.get().then((snapshot) => {
+            const data = snapshot.val();
+            const reward = (FARM_DURATION / 1000) * REWARD_PER_SEC;
+            userRef.update({ balance: (data.balance || 500) + reward, startTime: "null" });
         });
     }
 
@@ -221,14 +202,12 @@
         btn.onclick = startFarming;
     }
 
+    function forceOpen(url) {
+        tg.HapticFeedback.impactOccurred('light');
+        tg.openLink(url);
+    }
+
     initApp();
 </script>
+</body>
 </html>
-
-
-
-
-
-
-
-
