@@ -8,7 +8,7 @@
     <style>
         body {
             margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final_link') center center no-repeat;
+            background: #000 url('bg.jpg?v=final_fix') center center no-repeat;
             background-size: cover;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
@@ -47,13 +47,12 @@
             border: 1px solid #333; padding: 10px 0;
             background: rgba(255, 255, 255, 0.05);
             text-transform: uppercase; transition: 0.3s;
-            cursor: pointer;
+            display: block;
         }
         .social-btn:hover { border-color: #ff0000; color: #ff0000; }
 
         .mining-zone {
-            margin-top: 10px;
-            height: 80px;
+            margin-top: 10px; height: 80px;
             border: 1px dashed #222;
             display: flex; align-items: center; justify-content: center;
             color: #333; font-size: 10px; letter-spacing: 2px;
@@ -72,14 +71,14 @@
             <div class="balance">500 <span class="token-name">$CBP</span></div>
 
             <div class="social-grid">
-                <div class="social-btn" onclick="openLink('https://x.com/beatspromc')">X</div>
-                <div class="social-btn" onclick="openLink('https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm')">IG</div>
-                <div class="social-btn" onclick="openLink('https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT')">YT</div>
-                <div class="social-btn" onclick="openLink('https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P')">TT</div>
+                <a href="https://x.com/beatspromc" target="_blank" class="social-btn">X</a>
+                <a href="https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm" target="_blank" class="social-btn">IG</a>
+                <a href="https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT" target="_blank" class="social-btn">YT</a>
+                <a href="https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P" target="_blank" class="social-btn">TT</a>
             </div>
 
             <div class="mining-zone">
-                [ PRODUCTION MODULE OFFLINE ]
+                PRODUCTION MODULE<br>[ LOCKED ]
             </div>
         </div>
     </div>
@@ -89,11 +88,6 @@
         tg.expand(); tg.ready();
         const user = tg.initDataUnsafe?.user;
         document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
-
-        // Функция для безопасного открытия ссылок в Telegram
-        function openLink(url) {
-            tg.openLink(url);
-        }
     </script>
 </body>
 </html>
