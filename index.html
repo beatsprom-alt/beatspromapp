@@ -99,93 +99,113 @@
         </div>
     </div>
 
-    <script>
+   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); tg.ready();
-    document.getElementById('username').innerText = tg.initDataUnsafe?.user?.first_name || "BP";
+    tg.expand();
+    tg.ready();
 
-    function forceOpen(url) { tg.openLink(url); }
+    // 1. Отображаем имя
+    const user = tg.initDataUnsafe?.user;
+    document.getElementById('username').innerText = user?.first_name || user?.username || "BP";
 
-    // УМНАЯ ЛОГИКА ФАРМИНГА
-    let balance = parseFloat(localStorage.getItem('cbp_balance')) || 500;
-    let farmAmount = 0;
-    const duration = 8 * 60 * 60 * 1000; // 8 часов в миллисекундах
+    function forceOpen(url) { tg.openLink(url, {try_instant_view: false}); }
+
+    // 2. Настройки фарминга
+    const FARM_DURATION = 8 * 60 * 60 * 1000; // 8 часов
+    const REWARD_PER_SEC = 0.01; 
     let farmInterval;
 
-    document.getElementById('main-balance').innerText = Math.floor(balance);
-
-    function updateUI() {
-        const startTime = localStorage.getItem('mining_start_time');
-        if (!startTime) {
-            document.getElementById('farm-btn').style.display = 'block';
-            document.getElementById('mining-info').style.display = 'none';
-            return;
+    // ГЛАВНАЯ ФУНКЦИЯ ПРОВЕРКИ СОСТОЯНИЯ
+    function initApp() {
+        // Загружаем баланс (если нет — ставим 500)
+        let savedBalance = localStorage.getItem('syndicate_balance');
+        if (savedBalance === null) {
+            localStorage.setItem('syndicate_balance', '500');
+            savedBalance = '500';
         }
+        document.getElementById('main-balance').innerText = Math.floor(parseFloat(savedBalance));
 
-        const now = Date.now();
-        const elapsed = now - parseInt(startTime);
-        
-        if (elapsed >= duration) {
-            // Время вышло — пора забирать (Claim)
-            finishFarming(80.00); // Максимум за 8 часов (например, 80 монет)
+        // Проверяем, запущен ли майнинг
+        const startTime = localStorage.getItem('mining_started_at');
+        if (startTime) {
+            const now = Date.now();
+            const elapsed = now - parseInt(startTime);
+
+            if (elapsed >= FARM_DURATION) {
+                showClaimButton(); // Время вышло, можно забирать
+            } else {
+                resumeFarming(parseInt(startTime)); // Время еще идет
+            }
         } else {
-            // Процесс идет
-            farmingActive(startTime);
+            showStartButton(); // Майнинг еще не запускали
         }
+    }
+
+    function showStartButton() {
+        document.getElementById('farm-btn').style.display = 'block';
+        document.getElementById('farm-btn').innerText = "START PRODUCTION";
+        document.getElementById('mining-info').style.display = 'none';
+        document.getElementById('farm-btn').onclick = startFarming;
     }
 
     function startFarming() {
-        const startTime = Date.now();
-        localStorage.setItem('mining_start_time', startTime);
-        farmingActive(startTime);
+        const now = Date.now();
+        localStorage.setItem('mining_started_at', now.toString());
+        resumeFarming(now);
     }
 
-    function farmingActive(startTime) {
+    function resumeFarming(startTime) {
         document.getElementById('farm-btn').style.display = 'none';
         document.getElementById('mining-info').style.display = 'block';
-        
-        if(farmInterval) clearInterval(farmInterval);
-        
+
+        if (farmInterval) clearInterval(farmInterval);
+
         farmInterval = setInterval(() => {
             const now = Date.now();
-            const elapsed = now - parseInt(startTime);
-            const timeLeft = Math.max(0, duration - elapsed);
-            
-            // Считаем доход: 0.01 монеты в секунду (36 монет за час, 288 за 8ч)
-            farmAmount = (elapsed / 1000) * 0.01; 
-            
-            document.getElementById('farm-amount').innerText = farmAmount.toFixed(2);
-            document.getElementById('timer').innerText = new Date(timeLeft).toISOString().substr(11, 8);
-            document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / duration) * 100) + '%';
+            const elapsed = now - startTime;
+            const timeLeft = Math.max(0, FARM_DURATION - elapsed);
 
-            if (elapsed >= duration) {
+            // Визуальный расчет текущей добычи
+            const currentMined = (elapsed / 1000) * REWARD_PER_SEC;
+            document.getElementById('farm-amount').innerText = currentMined.toFixed(2);
+            
+            // Обновление таймера
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${hours}:${minutes}:${seconds}`;
+
+            // Прогресс-бар
+            const progress = Math.min(100, (elapsed / FARM_DURATION) * 100);
+            document.getElementById('progress-fill').style.width = progress + '%';
+
+            if (elapsed >= FARM_DURATION) {
                 clearInterval(farmInterval);
-                finishFarming(farmAmount);
+                showClaimButton();
             }
         }, 1000);
     }
 
-    function finishFarming(finalAmount) {
+    function showClaimButton() {
+        const totalReward = (FARM_DURATION / 1000) * REWARD_PER_SEC; // Фикс награда за 8 часов
+        document.getElementById('mining-info').style.display = 'none';
         const btn = document.getElementById('farm-btn');
         btn.style.display = 'block';
-        btn.innerText = "CLAIM " + finalAmount.toFixed(2) + " $CBP";
-        document.getElementById('mining-info').style.display = 'none';
-        
-        btn.onclick = () => {
-            balance += finalAmount;
-            localStorage.setItem('cbp_balance', balance);
-            document.getElementById('main-balance').innerText = Math.floor(balance);
-            
-            localStorage.removeItem('mining_start_time');
-            btn.innerText = "Start Production";
-            btn.onclick = startFarming;
-            updateUI();
-        };
+        btn.innerText = `CLAIM ${totalReward.toFixed(2)} $CBP`;
+        btn.onclick = () => claimReward(totalReward);
     }
 
-    // Запуск проверки при входе
-    updateUI();
+    function claimReward(amount) {
+        let currentBal = parseFloat(localStorage.getItem('syndicate_balance'));
+        currentBal += amount;
+        localStorage.setItem('syndicate_balance', currentBal.toString());
+        localStorage.removeItem('mining_started_at');
+        initApp(); // Перезапуск интерфейса
+    }
+
+    // Запускаем всё при загрузке
+    initApp();
 </script>
-</body>
 </html>
+
 
