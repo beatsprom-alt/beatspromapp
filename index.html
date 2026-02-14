@@ -83,7 +83,7 @@
                     <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt')">TT</div>
                 </div>
                 <div class="mining-zone">
-                    <div id="loading-text">CONNECTING TO FAMILY...</div>
+                    <div id="loading-text">CONNECTING...</div>
                     <button id="farm-btn" class="farm-btn" onclick="startFarming()">Start Production</button>
                     <div id="mining-info" style="display:none; width: 100%;">
                         <div class="label-text" style="color: #888;">PRODUCING: <span id="farm-amount" style="color:#fff">0.00</span></div>
@@ -111,7 +111,7 @@
             <div class="status-box">
                 <div class="user-name">TOP INFLUENCE</div>
                 <div id="leaderboard-list">
-                    <div class="label-text">SYNCHRONIZING DATA...</div>
+                    <div class="label-text">SYNCHRONIZING...</div>
                 </div>
             </div>
         </div>
@@ -155,8 +155,7 @@
 
     function generateRefLink() {
         const botUsername = "BeatspromBot"; 
-        const link = `https://t.me/${botUsername}?start=${userId}`;
-        document.getElementById('ref-link').value = link;
+        document.getElementById('ref-link').value = `https://t.me/${botUsername}?start=${userId}`;
     }
 
     function copyRefLink() {
@@ -167,8 +166,7 @@
     }
 
     function loadLeaderboard() {
-        const topRef = database.ref('users').orderByChild('balance').limitToLast(10);
-        topRef.once('value', (snapshot) => {
+        database.ref('users').orderByChild('balance').limitToLast(10).once('value', (snapshot) => {
             const listDiv = document.getElementById('leaderboard-list');
             listDiv.innerHTML = '';
             let leaders = [];
@@ -192,44 +190,41 @@
         const userRef = database.ref('users/' + userId);
         
         userRef.once('value').then((snapshot) => {
-            document.getElementById('loading-text').style.display = 'none';
             const data = snapshot.val();
+            document.getElementById('loading-text').style.display = 'none';
             
             if (!data) {
-                // ПЕРВАЯ РЕГИСТРАЦИЯ
-                const newUser = { 
-                    name: userName, 
-                    balance: 500, 
-                    startTime: "null",
-                    invitedBy: referrerId || "none" 
-                };
-
-                // Начисление бонуса пригласившему
+                // НОВЫЙ ПОЛЬЗОВАТЕЛЬ
+                const newUser = { name: userName, balance: 500, startTime: "null" };
+                
+                // Начисление бонуса пригласившему (безопасный метод)
                 if (referrerId && referrerId !== userId.toString()) {
                     const refUserRef = database.ref('users/' + referrerId);
-                    refUserRef.once('value').then((refSnapshot) => {
-                        if (refSnapshot.exists()) {
-                            const currentRefBalance = refSnapshot.val().balance || 0;
-                            refUserRef.update({ balance: currentRefBalance + 2500 });
-                            tg.showAlert("You were invited! Your friend got 2500 XP bonus.");
+                    refUserRef.once('value', (refSnap) => {
+                        if (refSnap.exists()) {
+                            const currentBal = refSnap.val().balance || 0;
+                            refUserRef.update({ balance: currentBal + 2500 });
+                            tg.showAlert("Welcome! Your friend received 2500 XP bonus.");
                         }
                     });
                 }
                 
-                userRef.set(newUser);
-                updateUI(newUser);
+                userRef.set(newUser).then(() => updateUI(newUser));
             } else {
                 updateUI(data);
             }
+        }).catch(err => {
+            document.getElementById('loading-text').innerText = "DB ERROR";
         });
 
+        // Слушаем изменения в реальном времени
         userRef.on('value', (snapshot) => {
             if (snapshot.exists()) updateUI(snapshot.val());
         });
     }
 
     function updateUI(data) {
-        document.getElementById('main-balance').innerText = Math.floor(data.balance);
+        document.getElementById('main-balance').innerText = Math.floor(data.balance || 0);
         if (data.startTime && data.startTime !== "null") {
             const elapsed = Date.now() - data.startTime;
             if (elapsed >= FARM_DURATION) { showClaimButton(); } 
@@ -252,15 +247,12 @@
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
             
             document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
-            
-            const progress = Math.min(100, (elapsed / FARM_DURATION) * 100);
-            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
             
             const h = Math.floor(timeLeft / 3600000);
             const m = Math.floor((timeLeft % 3600000) / 60000);
             const s = Math.floor((timeLeft % 60000) / 1000);
-            document.getElementById('timer').innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             
             if (elapsed >= FARM_DURATION) {
                 clearInterval(farmInterval);
@@ -275,10 +267,9 @@
         btn.style.display = 'block';
         btn.innerText = "CLAIM PRODUCTION";
         btn.onclick = () => {
-            const userRef = database.ref('users/' + userId);
-            userRef.get().then(s => {
+            database.ref('users/' + userId).once('value').then(s => {
                 const b = s.val().balance || 0;
-                userRef.update({ 
+                database.ref('users/' + userId).update({ 
                     balance: b + (FARM_DURATION/1000 * REWARD_PER_SEC), 
                     startTime: "null" 
                 });
