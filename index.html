@@ -139,9 +139,9 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const userId = tg.initDataUnsafe?.user?.id || "test_user";
+    const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
-    const referrerId = tg.initDataUnsafe?.start_param; 
+    const referrerId = tg.initDataUnsafe?.start_param ? String(tg.initDataUnsafe.start_param) : null; 
 
     document.getElementById('username').innerText = userName;
 
@@ -194,17 +194,23 @@
             document.getElementById('loading-text').style.display = 'none';
             
             if (!data) {
-                // НОВЫЙ ПОЛЬЗОВАТЕЛЬ
-                const newUser = { name: userName, balance: 500, startTime: "null" };
+                // ПЕРВАЯ РЕГИСТРАЦИЯ
+                const newUser = { 
+                    name: userName, 
+                    balance: 500, 
+                    startTime: "null",
+                    invitedBy: referrerId || "none"
+                };
                 
-                // Начисление бонуса пригласившему (безопасный метод)
-                if (referrerId && referrerId !== userId.toString()) {
+                // Начисление бонуса пригласившему
+                if (referrerId && referrerId !== userId) {
                     const refUserRef = database.ref('users/' + referrerId);
                     refUserRef.once('value', (refSnap) => {
                         if (refSnap.exists()) {
-                            const currentBal = refSnap.val().balance || 0;
-                            refUserRef.update({ balance: currentBal + 2500 });
-                            tg.showAlert("Welcome! Your friend received 2500 XP bonus.");
+                            const currentBal = Number(refSnap.val().balance) || 0;
+                            refUserRef.update({ balance: currentBal + 2500 }).then(() => {
+                                tg.showAlert("Success! Your friend got +2500 XP");
+                            });
                         }
                     });
                 }
@@ -213,11 +219,8 @@
             } else {
                 updateUI(data);
             }
-        }).catch(err => {
-            document.getElementById('loading-text').innerText = "DB ERROR";
         });
 
-        // Слушаем изменения в реальном времени
         userRef.on('value', (snapshot) => {
             if (snapshot.exists()) updateUI(snapshot.val());
         });
