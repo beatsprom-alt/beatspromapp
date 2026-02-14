@@ -1,113 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beatsprom Family</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <style>
-        body {
-            margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
-            background-size: cover;
-            color: #fff;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start;
-            height: 100vh; overflow: hidden;
-        }
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); z-index: 1;
-        }
-        .content {
-            position: relative; z-index: 2; text-align: center; width: 85%;
-            margin-top: 10vh; flex-grow: 1;
-        }
-        .tab-content { display: none; width: 100%; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .status-box {
-            border: 1px solid #ff0000;
-            padding: 20px 10px;
-            background: rgba(0, 0, 0, 0.9);
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
-        }
-        .user-name { font-size: 24px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
-        .label-text { font-size: 10px; color: #ffffff; letter-spacing: 2px; font-weight: bold; }
-        .balance { font-size: 42px; color: #fff; margin: 5px 0; font-weight: bold; }
-        .token-name { color: #ff0000; font-size: 18px; }
-
-        .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
-        .social-btn { color: #fff; border: 1px solid #333; padding: 12px 0; background: rgba(255, 255, 255, 0.1); text-transform: uppercase; font-size: 9px; cursor: pointer; text-decoration: none; }
-
-        .mining-zone { margin-top: 10px; min-height: 100px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.03); }
-        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 12px 20px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; display: none; }
-        .timer-text { font-size: 14px; margin-top: 8px; color: #ff0000; font-weight: bold; }
-        .progress-bar { width: 85%; height: 6px; background: #222; margin: 12px auto 0; position: relative; }
-        .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: 0.5s; }
-        
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: rgba(0,0,0,0.95); border-top: 1px solid #ff0000; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; }
-        .nav-item.active { color: #ff0000; }
-
-        .task-card { background: rgba(255,255,255,0.05); border-left: 3px solid #ff0000; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
-        .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; }
-        .copy-btn { background: #ff0000; border: none; padding: 10px 12px; cursor: pointer; color: white; }
-
-        #loading-text { font-size: 10px; color: #666; animation: blink 1.5s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-    </style>
-</head>
-<body>
-    <div class="overlay"></div>
-    <div class="content">
-        <div id="tab-home" class="tab-content active">
-            <div class="status-box">
-                <div class="label-text">IDENTIFIED MEMBER:</div>
-                <div id="username" class="user-name">BP</div>
-                <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
-                <div class="balance"><span id="main-balance">...</span> <span class="token-name">$BPC XP</span></div>
-                <div class="social-grid">
-                    <div class="social-btn" onclick="forceOpen('https://x.com/beatspromc')">X</div>
-                    <div class="social-btn" onclick="forceOpen('https://www.instagram.com/beatsprom')">IG</div>
-                    <div class="social-btn" onclick="forceOpen('https://youtube.com/@beatsprom')">YT</div>
-                    <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt')">TT</div>
-                </div>
-                <div class="mining-zone">
-                    <div id="loading-text">CONNECTING TO FAMILY...</div>
-                    <button id="farm-btn" class="farm-btn" onclick="startFarming()">Start Production</button>
-                    <div id="mining-info" style="display:none; width: 100%;">
-                        <div class="label-text" style="color: #888;">PRODUCING: <span id="farm-amount" style="color:#fff">0.00</span></div>
-                        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-                        <div id="timer" class="timer-text">08:00:00</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-tasks" class="tab-content">
-            <div class="status-box">
-                <div class="user-name">TASKS</div>
-                <div class="task-card" style="flex-direction: column; align-items: flex-start;">
-                    <div class="label-text">INVITE FRIENDS (+2500 XP)</div>
-                    <div style="display: flex; width: 100%; margin-top: 10px; gap: 5px;">
-                        <input type="text" id="ref-link" class="ref-input" readonly value="Loading link...">
-                        <button class="copy-btn" onclick="copyRefLink()">📋</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="navbar">
-        <div class="nav-item active" onclick="showTab('home', this)"><div>Prod</div></div>
-        <div class="nav-item" onclick="showTab('tasks', this)"><div>Tasks</div></div>
-    </div>
-
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
@@ -126,6 +16,9 @@
 
     const userId = tg.initDataUnsafe?.user?.id || "test_user";
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
+    // Получаем ID пригласившего из ссылки Telegram
+    const referrerId = tg.initDataUnsafe?.start_param; 
+
     document.getElementById('username').innerText = userName;
 
     function showTab(tabId, el) {
@@ -155,17 +48,43 @@
     function initApp() {
         generateRefLink();
         const userRef = database.ref('users/' + userId);
-        userRef.on('value', (snapshot) => {
+        
+        userRef.once('value').then((snapshot) => {
             document.getElementById('loading-text').style.display = 'none';
             const data = snapshot.val();
+            
             if (!data) {
-                userRef.set({ name: userName, balance: 500, startTime: null });
+                // ЛОГИКА ДЛЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
+                const newUser = { 
+                    name: userName, 
+                    balance: 500, 
+                    startTime: "null" 
+                };
+                
+                userRef.set(newUser);
+
+                // Если пришел по рефералке и не сам от себя
+                if (referrerId && referrerId !== userId.toString()) {
+                    const refUserRef = database.ref('users/' + referrerId);
+                    refUserRef.get().then((refSnapshot) => {
+                        if (refSnapshot.exists()) {
+                            const currentBalance = refSnapshot.val().balance || 0;
+                            refUserRef.update({ 
+                                balance: currentBalance + 2500 
+                            });
+                            console.log("Бонус 2500 XP начислен пригласившему: " + referrerId);
+                        }
+                    });
+                }
+                updateUI(newUser);
             } else {
                 updateUI(data);
             }
-        }, (error) => {
-            console.error(error);
-            document.getElementById('loading-text').innerText = "CONNECTION ERROR";
+        });
+
+        // Подписываемся на изменения баланса в реальном времени
+        userRef.on('value', (snapshot) => {
+            if (snapshot.exists()) updateUI(snapshot.val());
         });
     }
 
@@ -221,5 +140,3 @@
 
     initApp();
 </script>
-</body>
-</html>
