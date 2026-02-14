@@ -26,10 +26,8 @@
             position: relative; z-index: 2; text-align: center; width: 85%;
             margin-top: 10vh; flex-grow: 1;
         }
-
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .status-box {
@@ -38,88 +36,27 @@
             background: rgba(0, 0, 0, 0.9);
             box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
         }
-        .user-name {
-            font-size: 24px; color: #ff0000; margin-bottom: 10px;
-            text-transform: uppercase; font-weight: bold;
-        }
-        .label-text {
-            font-size: 10px; color: #ffffff; letter-spacing: 2px; font-weight: bold;
-        }
+        .user-name { font-size: 24px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
+        .label-text { font-size: 10px; color: #ffffff; letter-spacing: 2px; font-weight: bold; }
         .balance { font-size: 42px; color: #fff; margin: 5px 0; font-weight: bold; }
         .token-name { color: #ff0000; font-size: 18px; }
 
-        .social-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin: 20px 0;
-        }
-        .social-btn {
-            color: #fff; border: 1px solid #333; padding: 12px 0;
-            background: rgba(255, 255, 255, 0.1);
-            text-transform: uppercase; font-size: 9px;
-            cursor: pointer; transition: 0.3s;
-            display: block; text-decoration: none;
-        }
+        .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
+        .social-btn { color: #fff; border: 1px solid #333; padding: 12px 0; background: rgba(255, 255, 255, 0.1); text-transform: uppercase; font-size: 9px; cursor: pointer; text-decoration: none; }
 
-        .mining-zone {
-            margin-top: 10px; min-height: 100px;
-            border: 1px solid #333;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(255, 255, 255, 0.03);
-        }
-        .farm-btn {
-            background: #ff0000; color: #fff; border: none;
-            padding: 12px 20px; font-family: inherit; font-weight: bold;
-            cursor: pointer; text-transform: uppercase; width: 85%;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-            display: none;
-        }
+        .mining-zone { margin-top: 10px; min-height: 100px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.03); }
+        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 12px 20px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; display: none; }
         .timer-text { font-size: 14px; margin-top: 8px; color: #ff0000; font-weight: bold; }
-        .progress-bar { 
-            width: 85%; height: 6px; background: #222; 
-            margin: 12px auto 0; position: relative;
-        }
+        .progress-bar { width: 85%; height: 6px; background: #222; margin: 12px auto 0; position: relative; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: 0.5s; }
         
-        .navbar {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            height: 70px; background: rgba(0,0,0,0.95);
-            border-top: 1px solid #ff0000;
-            display: flex; justify-content: space-around; align-items: center;
-            z-index: 10;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            color: #555; cursor: pointer; transition: 0.3s;
-            text-transform: uppercase; font-size: 10px; font-weight: bold;
-        }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: rgba(0,0,0,0.95); border-top: 1px solid #ff0000; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; }
         .nav-item.active { color: #ff0000; }
-        .nav-icon { font-size: 20px; margin-bottom: 4px; }
 
-        .task-list { margin-top: 20px; text-align: left; }
-        .task-card {
-            background: rgba(255,255,255,0.05);
-            border-left: 3px solid #ff0000;
-            padding: 15px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .task-info h4 { margin: 0; font-size: 14px; color: #fff; }
-        .task-info p { margin: 5px 0 0; font-size: 11px; color: #ff0000; }
-        .task-go {
-            background: #fff; color: #000; padding: 5px 15px;
-            font-size: 11px; font-weight: bold; border: none; cursor: pointer;
-        }
-
-        /* Стили для поля ссылки - ПОПРАВИЛ ЦВЕТ ТЕКСТА НА БЕЛЫЙ */
-        .ref-input {
-            flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; 
-            color: #ffffff; padding: 10px; font-size: 9px; font-family: inherit; outline: none;
-        }
-        .copy-btn {
-            background: #ff0000; border: none; padding: 10px 12px; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; color: white;
-        }
+        .task-card { background: rgba(255,255,255,0.05); border-left: 3px solid #ff0000; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; }
+        .copy-btn { background: #ff0000; border: none; padding: 10px 12px; cursor: pointer; color: white; }
 
         #loading-text { font-size: 10px; color: #666; animation: blink 1.5s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
@@ -127,19 +64,18 @@
 </head>
 <body>
     <div class="overlay"></div>
-    
     <div class="content">
         <div id="tab-home" class="tab-content active">
             <div class="status-box">
                 <div class="label-text">IDENTIFIED MEMBER:</div>
                 <div id="username" class="user-name">BP</div>
                 <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
-                <div class="balance"><span id="main-balance">500</span> <span class="token-name">$BPC XP</span></div>
+                <div class="balance"><span id="main-balance">...</span> <span class="token-name">$BPC XP</span></div>
                 <div class="social-grid">
                     <div class="social-btn" onclick="forceOpen('https://x.com/beatspromc')">X</div>
-                    <div class="social-btn" onclick="forceOpen('https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm')">IG</div>
-                    <div class="social-btn" onclick="forceOpen('https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT')">YT</div>
-                    <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P')">TT</div>
+                    <div class="social-btn" onclick="forceOpen('https://www.instagram.com/beatsprom')">IG</div>
+                    <div class="social-btn" onclick="forceOpen('https://youtube.com/@beatsprom')">YT</div>
+                    <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt')">TT</div>
                 </div>
                 <div class="mining-zone">
                     <div id="loading-text">CONNECTING TO FAMILY...</div>
@@ -156,53 +92,20 @@
         <div id="tab-tasks" class="tab-content">
             <div class="status-box">
                 <div class="user-name">TASKS</div>
-                <div class="label-text">EXPAND THE FAMILY INFLUENCE</div>
-                <div class="task-list">
-                    <div class="task-card">
-                        <div class="task-info">
-                            <h4>Join Telegram Channel</h4>
-                            <p>+1000 $BPC XP</p>
-                        </div>
-                        <button class="task-go" onclick="forceOpen('https://t.me/beatsprom')">GO</button>
-                    </div>
-                    <div class="task-card" style="flex-direction: column; align-items: flex-start;">
-                        <div class="task-info">
-                            <h4>Invite Friends</h4>
-                            <p>+2500 $BPC XP per member</p>
-                        </div>
-                        <div style="display: flex; width: 100%; margin-top: 10px; gap: 5px;">
-                            <input type="text" id="ref-link" class="ref-input" readonly value="Loading link...">
-                            <button class="copy-btn" onclick="copyRefLink()">
-                                <span>📋</span>
-                            </button>
-                        </div>
+                <div class="task-card" style="flex-direction: column; align-items: flex-start;">
+                    <div class="label-text">INVITE FRIENDS (+2500 XP)</div>
+                    <div style="display: flex; width: 100%; margin-top: 10px; gap: 5px;">
+                        <input type="text" id="ref-link" class="ref-input" readonly value="Loading link...">
+                        <button class="copy-btn" onclick="copyRefLink()">📋</button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div id="tab-top" class="tab-content">
-            <div class="status-box">
-                <div class="user-name">TOP MEMBERS</div>
-                <div class="label-text">MOST VALUABLE ASSETS</div>
-                <div style="margin-top: 30px; color: #444;">DATA SYNCHRONIZING...</div>
             </div>
         </div>
     </div>
 
     <div class="navbar">
-        <div class="nav-item active" onclick="showTab('home', this)">
-            <div class="nav-icon">🎹</div>
-            <div>Prod</div>
-        </div>
-        <div class="nav-item" onclick="showTab('tasks', this)">
-            <div class="nav-icon">💼</div>
-            <div>Tasks</div>
-        </div>
-        <div class="nav-item" onclick="showTab('top', this)">
-            <div class="nav-icon">🏆</div>
-            <div>Top</div>
-        </div>
+        <div class="nav-item active" onclick="showTab('home', this)"><div>Prod</div></div>
+        <div class="nav-item" onclick="showTab('tasks', this)"><div>Tasks</div></div>
     </div>
 
 <script>
@@ -219,42 +122,35 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const tg = window.Telegram.WebApp;
-    tg.expand(); tg.ready();
+    tg.expand();
 
     const userId = tg.initDataUnsafe?.user?.id || "test_user";
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
     document.getElementById('username').innerText = userName;
 
     function showTab(tabId, el) {
-        tg.HapticFeedback.impactOccurred('light');
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.getElementById('tab-' + tabId).classList.add('active');
         el.classList.add('active');
     }
 
-    const FARM_DURATION = 8 * 60 * 60 * 1000; 
-    const REWARD_PER_SEC = 0.01; 
-    let farmInterval;
-
-    // ГЕНЕРАЦИЯ РЕФЕРАЛЬНОЙ ССЫЛКИ - ПОСТАВИЛ ТВОЕГО БОТА
     function generateRefLink() {
-        const botUsername = "BeatspromBot"; // Я вставил твой юзернейм сюда
+        const botUsername = "BeatspromBot"; 
         const link = `https://t.me/${botUsername}?start=${userId}`;
         document.getElementById('ref-link').value = link;
     }
 
-    // КОПИРОВАНИЕ ССЫЛКИ
     function copyRefLink() {
         const linkInput = document.getElementById('ref-link');
         linkInput.select();
-        linkInput.setSelectionRange(0, 99999); 
-        
-        navigator.clipboard.writeText(linkInput.value).then(() => {
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert("Family link copied! Send it to your allies.");
-        });
+        navigator.clipboard.writeText(linkInput.value);
+        tg.showAlert("Link copied!");
     }
+
+    const FARM_DURATION = 8 * 60 * 60 * 1000;
+    const REWARD_PER_SEC = 0.01;
+    let farmInterval;
 
     function initApp() {
         generateRefLink();
@@ -267,6 +163,9 @@
             } else {
                 updateUI(data);
             }
+        }, (error) => {
+            console.error(error);
+            document.getElementById('loading-text').innerText = "CONNECTION ERROR";
         });
     }
 
@@ -280,7 +179,6 @@
     }
 
     function startFarming() {
-        tg.HapticFeedback.impactOccurred('medium');
         database.ref('users/' + userId).update({ startTime: Date.now() });
     }
 
@@ -292,17 +190,36 @@
             const elapsed = Date.now() - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
             document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
-            
-            const h = Math.floor(timeLeft / 3600000).toString().padStart(2, '0');
-            const m = Math.floor((timeLeft % 3600000) / 60000).toString().padStart(2, '0');
-            const s = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
-            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
-
             if (elapsed >= FARM_DURATION) { clearInterval(farmInterval); showClaimButton(); }
         }, 1000);
     }
 
     function showClaimButton() {
         document.getElementById('mining-info').style.display = 'none';
+        const btn = document.getElementById('farm-btn');
+        btn.style.display = 'block';
+        btn.innerText = "CLAIM PRODUCTION";
+        btn.onclick = () => {
+            const userRef = database.ref('users/' + userId);
+            userRef.get().then(s => {
+                const b = s.val().balance || 500;
+                userRef.update({ balance: b + (FARM_DURATION/1000 * REWARD_PER_SEC), startTime: "null" });
+            });
+        };
+    }
 
+    function showStartButton() {
+        const btn = document.getElementById('farm-btn');
+        btn.style.display = 'block';
+        btn.innerText = "START PRODUCTION";
+        document.getElementById('mining-info').style.display = 'none';
+        btn.onclick = startFarming;
+    }
+
+    function forceOpen(url) { tg.openLink(url); }
+
+    initApp();
+</script>
+</body>
+</html>
