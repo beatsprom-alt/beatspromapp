@@ -141,7 +141,9 @@
 
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
-    const referrerId = tg.initDataUnsafe?.start_param ? String(tg.initDataUnsafe.start_param) : null; 
+    // Четкое получение параметра пригласителя
+    const rawParam = tg.initDataUnsafe?.start_param;
+    const referrerId = rawParam ? String(rawParam) : null; 
 
     document.getElementById('username').innerText = userName;
 
@@ -194,23 +196,26 @@
             document.getElementById('loading-text').style.display = 'none';
             
             if (!data) {
-                // ПЕРВАЯ РЕГИСТРАЦИЯ
+                // ЛОГИКА НОВОГО ПОЛЬЗОВАТЕЛЯ
+                if (referrerId) {
+                    tg.showAlert("Referral detected! ID: " + referrerId);
+                }
+
                 const newUser = { 
                     name: userName, 
                     balance: 500, 
                     startTime: "null",
                     invitedBy: referrerId || "none"
                 };
-                
-                // Начисление бонуса пригласившему
+
+                // Проверка и начисление бонуса пригласившему
                 if (referrerId && referrerId !== userId) {
                     const refUserRef = database.ref('users/' + referrerId);
-                    refUserRef.once('value', (refSnap) => {
+                    refUserRef.once('value').then((refSnap) => {
                         if (refSnap.exists()) {
                             const currentBal = Number(refSnap.val().balance) || 0;
-                            refUserRef.update({ balance: currentBal + 2500 }).then(() => {
-                                tg.showAlert("Success! Your friend got +2500 XP");
-                            });
+                            refUserRef.update({ balance: currentBal + 2500 });
+                            console.log("Bonus sent to " + referrerId);
                         }
                     });
                 }
