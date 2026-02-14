@@ -111,10 +111,10 @@
             font-size: 11px; font-weight: bold; border: none; cursor: pointer;
         }
 
-        /* Стили для поля ссылки */
+        /* Стили для поля ссылки - ПОПРАВИЛ ЦВЕТ ТЕКСТА НА БЕЛЫЙ */
         .ref-input {
-            flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #333; 
-            color: #888; padding: 10px; font-size: 9px; font-family: inherit; outline: none;
+            flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; 
+            color: #ffffff; padding: 10px; font-size: 9px; font-family: inherit; outline: none;
         }
         .copy-btn {
             background: #ff0000; border: none; padding: 10px 12px; cursor: pointer; 
@@ -133,17 +133,14 @@
             <div class="status-box">
                 <div class="label-text">IDENTIFIED MEMBER:</div>
                 <div id="username" class="user-name">BP</div>
-                
                 <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
                 <div class="balance"><span id="main-balance">500</span> <span class="token-name">$BPC XP</span></div>
-
                 <div class="social-grid">
                     <div class="social-btn" onclick="forceOpen('https://x.com/beatspromc')">X</div>
                     <div class="social-btn" onclick="forceOpen('https://www.instagram.com/beatsprom?igsh=ZWYwdjA3Zjlhc2Vm')">IG</div>
                     <div class="social-btn" onclick="forceOpen('https://youtube.com/@beatsprom?si=jDeWpIzStJoV4CyT')">YT</div>
                     <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt?_r=1&_t=ZS-93srP7kFz7P')">TT</div>
                 </div>
-
                 <div class="mining-zone">
                     <div id="loading-text">CONNECTING TO FAMILY...</div>
                     <button id="farm-btn" class="farm-btn" onclick="startFarming()">Start Production</button>
@@ -160,7 +157,6 @@
             <div class="status-box">
                 <div class="user-name">TASKS</div>
                 <div class="label-text">EXPAND THE FAMILY INFLUENCE</div>
-                
                 <div class="task-list">
                     <div class="task-card">
                         <div class="task-info">
@@ -169,7 +165,6 @@
                         </div>
                         <button class="task-go" onclick="forceOpen('https://t.me/beatsprom')">GO</button>
                     </div>
-
                     <div class="task-card" style="flex-direction: column; align-items: flex-start;">
                         <div class="task-info">
                             <h4>Invite Friends</h4>
@@ -242,9 +237,9 @@
     const REWARD_PER_SEC = 0.01; 
     let farmInterval;
 
-    // ГЕНЕРАЦИЯ РЕФЕРАЛЬНОЙ ССЫЛКИ
+    // ГЕНЕРАЦИЯ РЕФЕРАЛЬНОЙ ССЫЛКИ - ПОСТАВИЛ ТВОЕГО БОТА
     function generateRefLink() {
-        const botUsername = "ВАШ_БОТ_USERNAME"; // ЗАМЕНИ ЭТО НА ИМЯ СВОЕГО БОТА (БЕЗ @)
+        const botUsername = "BeatspromBot"; 
         const link = `https://t.me/${botUsername}?start=${userId}`;
         document.getElementById('ref-link').value = link;
     }
@@ -262,7 +257,7 @@
     }
 
     function initApp() {
-        generateRefLink(); // Сразу создаем ссылку
+        generateRefLink();
         const userRef = database.ref('users/' + userId);
         userRef.on('value', (snapshot) => {
             document.getElementById('loading-text').style.display = 'none';
@@ -310,36 +305,3 @@
 
     function showClaimButton() {
         document.getElementById('mining-info').style.display = 'none';
-        const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = `CLAIM ${(FARM_DURATION / 1000 * REWARD_PER_SEC).toFixed(2)} $BPC XP`;
-        btn.onclick = claimReward;
-    }
-
-    function claimReward() {
-        tg.HapticFeedback.notificationOccurred('success');
-        const userRef = database.ref('users/' + userId);
-        userRef.get().then((snapshot) => {
-            const data = snapshot.val();
-            const reward = (FARM_DURATION / 1000) * REWARD_PER_SEC;
-            userRef.update({ balance: (data.balance || 500) + reward, startTime: "null" });
-        });
-    }
-
-    function showStartButton() {
-        const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = "START PRODUCTION";
-        document.getElementById('mining-info').style.display = 'none';
-        btn.onclick = startFarming;
-    }
-
-    function forceOpen(url) {
-        tg.HapticFeedback.impactOccurred('light');
-        tg.openLink(url);
-    }
-
-    initApp();
-</script>
-</body>
-</html>
