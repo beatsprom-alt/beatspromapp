@@ -43,7 +43,7 @@
         .token-name { color: #ff0000; font-size: 18px; }
 
         .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
-        .social-btn { color: #fff; border: 1px solid #333; padding: 12px 0; background: rgba(255, 255, 255, 0.1); text-transform: uppercase; font-size: 9px; cursor: pointer; text-decoration: none; }
+        .social-btn { color: #fff; border: 1px solid #333; padding: 12px 0; background: rgba(255, 255, 255, 0.1); text-transform: uppercase; font-size: 9px; cursor: pointer; text-decoration: none; text-align: center;}
 
         .mining-zone { margin-top: 10px; min-height: 100px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.03); }
         .farm-btn { background: #ff0000; color: #fff; border: none; padding: 12px 20px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; display: none; }
@@ -56,7 +56,7 @@
         .nav-item.active { color: #ff0000; }
 
         .task-card { background: rgba(255,255,255,0.05); border-left: 3px solid #ff0000; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
-        .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; }
+        .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; width: 70%;}
         .copy-btn { background: #ff0000; border: none; padding: 10px 12px; cursor: pointer; color: white; }
 
         .leader-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-size: 12px; }
@@ -73,7 +73,7 @@
         <div id="tab-home" class="tab-content active">
             <div class="status-box">
                 <div class="label-text">IDENTIFIED MEMBER:</div>
-                <div id="username" class="user-name">BP</div>
+                <div id="username" class="user-name">...</div>
                 <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
                 <div class="balance"><span id="main-balance">...</span> <span class="token-name">$BPC XP</span></div>
                 <div class="social-grid">
@@ -140,9 +140,13 @@
     tg.ready();
     tg.expand();
 
+    // Захват данных пользователя
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
-    const referrerId = tg.initDataUnsafe?.start_param ? String(tg.initDataUnsafe.start_param) : null; 
+    
+    // ИСПРАВЛЕННЫЙ ЗАХВАТ РЕФЕРАЛА (для прямых ссылок /app?startapp=ID)
+    const startParam = tg.initDataUnsafe?.start_param;
+    const referrerId = startParam ? String(startParam) : null; 
 
     document.getElementById('username').innerText = userName;
 
@@ -154,9 +158,12 @@
         if(tabId === 'top') loadLeaderboard();
     }
 
+    // ИСПРАВЛЕННАЯ ГЕНЕРАЦИЯ ССЫЛКИ
     function generateRefLink() {
-        const botUsername = "BeatspromBot"; 
-        document.getElementById('ref-link').value = `https://t.me/${botUsername}?start=${userId}`;
+        const botUsername = "Beatsprombot"; // Твой бот
+        const appShortName = "app"; // Твое Short Name из BotFather
+        const link = `https://t.me/${botUsername}/${appShortName}?startapp=${userId}`;
+        document.getElementById('ref-link').value = link;
     }
 
     function copyRefLink() {
@@ -175,7 +182,7 @@
             leaders.reverse().forEach((leader, index) => {
                 listDiv.innerHTML += `
                     <div class="leader-item">
-                        <span class="leader-name">${index + 1}. ${leader.name}</span>
+                        <span class="leader-name">${index + 1}. ${leader.name || 'Anonymous'}</span>
                         <span class="leader-score">${Math.floor(leader.balance)} XP</span>
                     </div>`;
             });
@@ -195,13 +202,13 @@
             document.getElementById('loading-text').style.display = 'none';
             
             if (!data) {
-                // Создаем профиль НОВОГО юзера (записываем кто пригласил, но не даем бонус пока что)
+                // Создаем профиль НОВОГО юзера
                 const newUser = { 
                     name: userName, 
                     balance: 500, 
                     startTime: "null",
                     invitedBy: referrerId || "none",
-                    rewardGiven: false // Флаг: был ли уже выплачен бонус пригласившему
+                    rewardGiven: false 
                 };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
@@ -231,20 +238,17 @@
         userRef.once('value').then((snap) => {
             const userData = snap.val();
             
-            // ЛОГИКА РЕФЕРАЛА: Проверяем при нажатии на Старт
+            // ЛОГИКА РЕФЕРАЛА: Проверяем при первом нажатии на Старт
             if (userData && userData.invitedBy && userData.invitedBy !== "none" && !userData.rewardGiven) {
                 const rId = userData.invitedBy;
                 
-                // Чтобы не приглашать самого себя
                 if (rId !== userId) {
                     const refUserBalanceRef = database.ref('users/' + rId + '/balance');
                     
-                    // Безопасно увеличиваем баланс пригласителя
                     refUserBalanceRef.transaction((currentBalance) => {
                         return (currentBalance || 0) + 2500;
                     });
                     
-                    // Помечаем, что этот юзер свой бонус пригласителю "отработал"
                     userRef.update({ rewardGiven: true });
                     tg.showAlert("Welcome! Your friend received 2500 XP bonus!");
                 }
@@ -287,9 +291,9 @@
         btn.innerText = "CLAIM PRODUCTION";
         btn.onclick = () => {
             database.ref('users/' + userId).once('value').then(s => {
-                const b = s.val().balance || 0;
+                const currentBalance = s.val().balance || 0;
                 database.ref('users/' + userId).update({ 
-                    balance: b + (FARM_DURATION/1000 * REWARD_PER_SEC), 
+                    balance: currentBalance + (FARM_DURATION/1000 * REWARD_PER_SEC), 
                     startTime: "null" 
                 });
             });
