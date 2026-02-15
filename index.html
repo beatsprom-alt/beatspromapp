@@ -141,9 +141,7 @@
 
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
-    // Четкое получение параметра пригласителя
-    const rawParam = tg.initDataUnsafe?.start_param;
-    const referrerId = rawParam ? String(rawParam) : null; 
+    const referrerId = tg.initDataUnsafe?.start_param ? String(tg.initDataUnsafe.start_param) : null; 
 
     document.getElementById('username').innerText = userName;
 
@@ -196,31 +194,16 @@
             document.getElementById('loading-text').style.display = 'none';
             
             if (!data) {
-                // ЛОГИКА НОВОГО ПОЛЬЗОВАТЕЛЯ
-                if (referrerId) {
-                    tg.showAlert("Referral detected! ID: " + referrerId);
-                }
-
+                // ПЕРВИЧНАЯ РЕГИСТРАЦИЯ
                 const newUser = { 
                     name: userName, 
                     balance: 500, 
                     startTime: "null",
-                    invitedBy: referrerId || "none"
+                    invitedBy: referrerId || "none",
+                    rewardGiven: false
                 };
-
-                // Проверка и начисление бонуса пригласившему
-                if (referrerId && referrerId !== userId) {
-                    const refUserRef = database.ref('users/' + referrerId);
-                    refUserRef.once('value').then((refSnap) => {
-                        if (refSnap.exists()) {
-                            const currentBal = Number(refSnap.val().balance) || 0;
-                            refUserRef.update({ balance: currentBal + 2500 });
-                            console.log("Bonus sent to " + referrerId);
-                        }
-                    });
-                }
-                
                 userRef.set(newUser).then(() => updateUI(newUser));
+                if(referrerId) tg.showAlert("Referral link active! Start production to bonus your friend.");
             } else {
                 updateUI(data);
             }
@@ -241,61 +224,23 @@
     }
 
     function startFarming() {
-        database.ref('users/' + userId).update({ startTime: Date.now() });
-    }
-
-    function resumeFarming(startTime) {
-        document.getElementById('farm-btn').style.display = 'none';
-        document.getElementById('mining-info').style.display = 'block';
-        if (farmInterval) clearInterval(farmInterval);
-        
-        farmInterval = setInterval(() => {
-            const now = Date.now();
-            const elapsed = now - startTime;
-            const timeLeft = Math.max(0, FARM_DURATION - elapsed);
+        const userRef = database.ref('users/' + userId);
+        userRef.once('value').then((snap) => {
+            const userData = snap.val();
             
-            document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
-            document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
-            
-            const h = Math.floor(timeLeft / 3600000);
-            const m = Math.floor((timeLeft % 3600000) / 60000);
-            const s = Math.floor((timeLeft % 60000) / 1000);
-            document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            
-            if (elapsed >= FARM_DURATION) {
-                clearInterval(farmInterval);
-                showClaimButton();
+            // ПРОВЕРКА И ВЫПЛАТА БОНУСА ПРИ ПЕРВОМ ТАПЕ
+            if (userData && userData.invitedBy && userData.invitedBy !== "none" && !userData.rewardGiven) {
+                const rId = userData.invitedBy;
+                if (rId !== userId) {
+                    database.ref('users/' + rId).once('value').then((rSnap) => {
+                        if (rSnap.exists()) {
+                            const oldBal = Number(rSnap.val().balance) || 0;
+                            database.ref('users/' + rId).update({ balance: oldBal + 2500 });
+                            userRef.update({ rewardGiven: true });
+                            tg.showAlert("Success! Your friend received 2500 XP");
+                        }
+                    });
+                }
             }
-        }, 1000);
-    }
-
-    function showClaimButton() {
-        document.getElementById('mining-info').style.display = 'none';
-        const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = "CLAIM PRODUCTION";
-        btn.onclick = () => {
-            database.ref('users/' + userId).once('value').then(s => {
-                const b = s.val().balance || 0;
-                database.ref('users/' + userId).update({ 
-                    balance: b + (FARM_DURATION/1000 * REWARD_PER_SEC), 
-                    startTime: "null" 
-                });
-            });
-        };
-    }
-
-    function showStartButton() {
-        const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = "START PRODUCTION";
-        document.getElementById('mining-info').style.display = 'none';
-        btn.onclick = startFarming;
-    }
-
-    function forceOpen(url) { tg.openLink(url); }
-
-    initApp();
-</script>
-</body>
-</html>
+            // ОБЫЧНЫЙ ЗАПУСК
+            userRef.update({ startTime:
