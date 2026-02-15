@@ -51,9 +51,55 @@
         .progress-bar { width: 85%; height: 6px; background: #222; margin: 12px auto 0; position: relative; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 0.5s linear; }
         
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: rgba(0,0,0,0.95); border-top: 1px solid #ff0000; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #555; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; }
-        .nav-item.active { color: #ff0000; }
+        /* --- ОБНОВЛЕННЫЙ NAVBAR --- */
+        .navbar { 
+            position: fixed; 
+            bottom: 0; left: 0; 
+            width: 100%; 
+            height: 85px; 
+            background: rgba(0,0,0,0.96); 
+            border-top: 1px solid rgba(255, 0, 0, 0.3); 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            z-index: 10;
+            padding-bottom: 15px; /* Запас для системной полоски на смартфонах */
+        }
+
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            color: #550000; /* Цвет неактивного текста */
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-size: 11px; 
+            font-weight: 900; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 30%;
+        }
+
+        /* Текст внутри неактивной кнопки */
+        .nav-item div {
+            padding: 8px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        /* СТИЛЬ АКТИВНОЙ КНОПКИ (БЕЛАЯ КАПСУЛА) */
+        .nav-item.active {
+            color: #000; /* Черный текст на белом фоне */
+        }
+
+        .nav-item.active div {
+            background: #ffffff; /* Чистый белый цвет */
+            color: #000000;
+            padding: 8px 30px; /* Размеры капсулы */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Белое неоновое свечение */
+            transform: scale(1.05); /* Легкое увеличение */
+        }
+        /* -------------------------- */
 
         .task-card { background: rgba(255,255,255,0.05); border-left: 3px solid #ff0000; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
         .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; width: 70%;}
@@ -140,11 +186,8 @@
     tg.ready();
     tg.expand();
 
-    // Захват данных пользователя
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
-    
-    // ИСПРАВЛЕННЫЙ ЗАХВАТ РЕФЕРАЛА (для прямых ссылок /app?startapp=ID)
     const startParam = tg.initDataUnsafe?.start_param;
     const referrerId = startParam ? String(startParam) : null; 
 
@@ -158,10 +201,9 @@
         if(tabId === 'top') loadLeaderboard();
     }
 
-    // ИСПРАВЛЕННАЯ ГЕНЕРАЦИЯ ССЫЛКИ
     function generateRefLink() {
-        const botUsername = "Beatsprombot"; // Твой бот
-        const appShortName = "app"; // Твое Short Name из BotFather
+        const botUsername = "Beatsprombot"; 
+        const appShortName = "app"; 
         const link = `https://t.me/${botUsername}/${appShortName}?startapp=${userId}`;
         document.getElementById('ref-link').value = link;
     }
@@ -202,7 +244,6 @@
             document.getElementById('loading-text').style.display = 'none';
             
             if (!data) {
-                // Создаем профиль НОВОГО юзера
                 const newUser = { 
                     name: userName, 
                     balance: 500, 
@@ -237,24 +278,17 @@
         
         userRef.once('value').then((snap) => {
             const userData = snap.val();
-            
-            // ЛОГИКА РЕФЕРАЛА: Проверяем при первом нажатии на Старт
             if (userData && userData.invitedBy && userData.invitedBy !== "none" && !userData.rewardGiven) {
                 const rId = userData.invitedBy;
-                
                 if (rId !== userId) {
                     const refUserBalanceRef = database.ref('users/' + rId + '/balance');
-                    
                     refUserBalanceRef.transaction((currentBalance) => {
                         return (currentBalance || 0) + 2500;
                     });
-                    
                     userRef.update({ rewardGiven: true });
                     tg.showAlert("Welcome! Your friend received 2500 XP bonus!");
                 }
             }
-
-            // Запускаем сам фарминг
             userRef.update({ startTime: Date.now() });
         });
     }
