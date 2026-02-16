@@ -18,8 +18,8 @@
             align-items: center; justify-content: flex-start;
             height: 100vh; overflow: hidden;
         }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1; }
-        .content { position: relative; z-index: 2; text-align: center; width: 90%; margin-top: 8vh; flex-grow: 1; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
+        .content { position: relative; z-index: 2; text-align: center; width: 90%; margin-top: 6vh; flex-grow: 1; overflow-y: auto; padding-bottom: 100px; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -29,64 +29,48 @@
             padding: 20px 10px;
             background: rgba(0, 0, 0, 0.9);
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .user-name { font-size: 22px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
         .label-text { font-size: 10px; color: #aaaaaa; letter-spacing: 1px; font-weight: bold; text-transform: uppercase; }
-        
-        /* Возвращен КРАСНЫЙ цвет баланса */
-        .balance { font-size: 42px; color: #ff0000; margin: 5px 0; font-weight: bold; text-shadow: 0 0 10px rgba(255,0,0,0.5); }
+        .balance { font-size: 48px; color: #ff0000; margin: 10px 0; font-weight: bold; text-shadow: 0 0 15px rgba(255,0,0,0.6); }
         .token-name { color: #fff; font-size: 16px; margin-left: 5px; }
 
-        .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 20px 0; }
-        .social-btn { 
-            color: #fff; border: 1px solid #444; padding: 12px 0; 
-            background: rgba(255, 255, 255, 0.05); text-transform: uppercase; 
-            font-size: 10px; cursor: pointer; text-decoration: none; 
-            text-align: center; transition: 0.3s;
-        }
-        .social-btn.done { border-color: #00ff00 !important; color: #00ff00 !important; box-shadow: inset 0 0 10px rgba(0,255,0,0.2); }
-
-        .mining-zone { margin-top: 10px; min-height: 120px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); }
-        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 15px 25px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 80%; }
-        .timer-text { font-size: 16px; margin-top: 8px; color: #ff0000; font-weight: bold; letter-spacing: 1px; }
-        .progress-bar { width: 80%; height: 4px; background: #222; margin: 15px auto 0; overflow: hidden; }
+        /* MINING SECTION */
+        .mining-zone { margin-top: 20px; min-height: 150px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.7); }
+        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 18px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; font-size: 14px; }
+        .timer-text { font-size: 20px; margin-top: 10px; color: #ff0000; font-weight: bold; }
+        .progress-bar { width: 85%; height: 6px; background: #222; margin: 15px auto 0; overflow: hidden; border-radius: 3px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
-        
+
+        /* TASKS LIST */
+        .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .task-info { display: flex; flex-direction: column; }
+        .task-title { font-size: 12px; font-weight: bold; color: #fff; }
+        .task-reward { font-size: 10px; color: #ff0000; margin-top: 4px; }
+        .task-action-btn { background: #ff0000; color: #fff; border: none; padding: 8px 15px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .task-action-btn.done { background: transparent; border: 1px solid #00ff00; color: #00ff00; }
+
+        /* REF LINK SECTION */
+        .ref-box { background: rgba(255,0,0,0.05); border: 1px dashed #ff0000; padding: 15px; margin-top: 15px; }
+        .ref-input-group { display: flex; margin-top: 10px; background: #000; border: 1px solid #444; }
+        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; width: 60%; }
+        .copy-btn { background: #ff0000; border: none; padding: 10px; cursor: pointer; color: #fff; font-weight: bold; }
+
+        /* LEADERBOARD */
+        .leader-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #222; background: rgba(0,0,0,0.4); }
+        .leader-rank { width: 35px; color: #666; font-weight: bold; font-size: 14px; }
+        .leader-name { flex-grow: 1; text-align: left; color: #fff; }
+        .leader-score { color: #ff0000; font-weight: bold; }
+
         /* NAVBAR */
-        .navbar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; 
-            background: #000; border-top: 1px solid #333; 
-            display: flex; justify-content: space-around; align-items: center; z-index: 10; 
-        }
-        .nav-item { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #444; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; width: 33%;
-        }
-        .nav-item div { padding: 10px 0; width: 100%; text-align: center; transition: 0.2s; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #333; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 10px; font-weight: bold; width: 33%; }
+        .nav-item div { padding: 10px 0; width: 100%; text-align: center; }
         .nav-item.active { color: #fff; }
         .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
 
-        /* TASKS */
-        .task-card { background: rgba(20,20,20,0.9); border: 1px solid #333; padding: 15px; margin-bottom: 12px; text-align: left; }
-        .ref-input-group { display: flex; margin-top: 10px; border: 1px solid #ff0000; }
-        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; font-family: inherit; outline: none; }
-        .copy-btn { background: #ff0000; border: none; padding: 10px 15px; cursor: pointer; color: #fff; font-weight: bold; }
-
-        /* LEADERBOARD - FIXED */
-        .leader-item { 
-            display: flex; align-items: center; padding: 12px 10px; 
-            border-bottom: 1px solid #222; font-size: 13px; background: rgba(0,0,0,0.3);
-        }
-        .leader-rank { width: 30px; color: #555; font-weight: bold; }
-        .leader-name { flex-grow: 1; text-align: left; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
-        .leader-score { width: 90px; text-align: right; color: #ff0000; font-weight: bold; font-family: 'Courier New', monospace; }
-
-        #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: #fff; color: #000; padding: 8px 20px; border-radius: 5px;
-            font-size: 11px; font-weight: bold; z-index: 1000; display: none;
-        }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: bold; z-index: 1000; display: none; }
     </style>
 </head>
 <body>
@@ -95,20 +79,13 @@
     <div class="content">
         <div id="tab-home" class="tab-content active">
             <div class="status-box">
-                <div class="label-text">MEMBER:</div>
+                <div class="label-text">IDENTIFIED MEMBER:</div>
                 <div id="username" class="user-name">...</div>
-                <div class="label-text" style="margin-top: 10px;">BALANCE:</div>
+                <div class="label-text" style="margin-top: 15px;">TOTAL ASSETS:</div>
                 <div class="balance"><span id="main-balance">0</span><span class="token-name">XP</span></div>
                 
-                <div class="social-grid">
-                    <div id="btn-x" class="social-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">X</div>
-                    <div id="btn-ig" class="social-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">IG</div>
-                    <div id="btn-yt" class="social-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">YT</div>
-                    <div id="btn-tt" class="social-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">TT</div>
-                </div>
-
                 <div class="mining-zone">
-                    <div id="loading-text" class="label-text">CONNECTING...</div>
+                    <div id="loading-text" class="label-text">CONNECTING TO NODE...</div>
                     <button id="farm-btn" class="farm-btn" style="display:none;" onclick="startFarming()">Start Production</button>
                     <div id="mining-info" style="display:none; width: 100%;">
                         <div class="label-text">PRODUCING: <span id="farm-amount" style="color:#fff">0.00</span></div>
@@ -122,9 +99,41 @@
         <div id="tab-tasks" class="tab-content">
             <div class="status-box">
                 <div class="user-name">TASKS</div>
+                
                 <div class="task-card">
-                    <div class="label-text">REFERRAL PROGRAM</div>
-                    <p style="font-size: 10px; color: #888; margin: 5px 0;">Earn +2500 XP for every friend invited.</p>
+                    <div class="task-info">
+                        <span class="task-title">FOLLOW ON X</span>
+                        <span class="task-reward">+500 XP</span>
+                    </div>
+                    <button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button>
+                </div>
+
+                <div class="task-card">
+                    <div class="task-info">
+                        <span class="task-title">FOLLOW ON INSTAGRAM</span>
+                        <span class="task-reward">+500 XP</span>
+                    </div>
+                    <button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button>
+                </div>
+
+                <div class="task-card">
+                    <div class="task-info">
+                        <span class="task-title">SUBSCRIBE YOUTUBE</span>
+                        <span class="task-reward">+500 XP</span>
+                    </div>
+                    <button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button>
+                </div>
+
+                <div class="task-card">
+                    <div class="task-info">
+                        <span class="task-title">FOLLOW TIKTOK</span>
+                        <span class="task-reward">+500 XP</span>
+                    </div>
+                    <button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">START</button>
+                </div>
+
+                <div class="ref-box">
+                    <div class="label-text">INVITE FRIENDS (+2500 XP)</div>
                     <div class="ref-input-group">
                         <input type="text" id="ref-link" class="ref-input" readonly value="Generating...">
                         <button class="copy-btn" onclick="copyRefLink()">COPY</button>
@@ -135,9 +144,9 @@
 
         <div id="tab-top" class="tab-content">
             <div class="status-box">
-                <div class="user-name">LEADERBOARD</div>
+                <div class="user-name">TOP INFLUENCE</div>
                 <div id="leaderboard-list">
-                    <div class="label-text" style="padding: 20px;">LOADING...</div>
+                    <div class="label-text" style="padding: 20px;">SYNCING...</div>
                 </div>
             </div>
         </div>
@@ -194,10 +203,12 @@
             tg.openLink(url);
             if (!data[taskKey]) {
                 userRef.update({ [taskKey]: true, balance: (data.balance || 0) + 500 }).then(() => {
-                    showToast("+500 XP GRANTED!");
-                    document.getElementById('btn-' + platform).classList.add('done');
+                    showToast("+500 XP SECURED!");
+                    const btn = document.getElementById('btn-' + platform);
+                    btn.classList.add('done');
+                    btn.innerText = "DONE";
                 });
-            } else { showToast("ALREADY DONE"); }
+            } else { showToast("ALREADY CLAIMED"); }
         });
     }
 
@@ -205,7 +216,7 @@
         const linkInput = document.getElementById('ref-link');
         linkInput.select();
         navigator.clipboard.writeText(linkInput.value);
-        showToast("COPIED TO CLIPBOARD");
+        showToast("LINK COPIED!");
     }
 
     function loadLeaderboard() {
@@ -217,7 +228,7 @@
             leaders.reverse().forEach((leader, index) => {
                 listDiv.innerHTML += `
                     <div class="leader-item">
-                        <span class="leader-rank">${index + 1}</span>
+                        <span class="leader-rank">#${index + 1}</span>
                         <span class="leader-name">${leader.name || 'Anonymous'}</span>
                         <span class="leader-score">${Math.floor(leader.balance).toLocaleString()} XP</span>
                     </div>`;
@@ -241,7 +252,13 @@
                 const newUser = { name: userName, balance: 500, startTime: "null", invitedBy: startParam || "none", task_x: false, task_ig: false, task_yt: false, task_tt: false };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
-                ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) document.getElementById('btn-'+p).classList.add('done'); });
+                ['x', 'ig', 'yt', 'tt'].forEach(p => { 
+                    if(data['task_'+p]) {
+                        const btn = document.getElementById('btn-'+p);
+                        btn.classList.add('done');
+                        btn.innerText = "DONE";
+                    }
+                });
                 updateUI(data);
             }
         });
