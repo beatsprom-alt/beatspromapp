@@ -43,7 +43,13 @@
         .token-name { color: #ff0000; font-size: 18px; }
 
         .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
-        .social-btn { color: #fff; border: 1px solid #333; padding: 12px 0; background: rgba(255, 255, 255, 0.1); text-transform: uppercase; font-size: 9px; cursor: pointer; text-decoration: none; text-align: center;}
+        .social-btn { 
+            color: #fff; border: 1px solid #333; padding: 12px 0; 
+            background: rgba(255, 255, 255, 0.1); text-transform: uppercase; 
+            font-size: 9px; cursor: pointer; text-decoration: none; 
+            text-align: center; transition: 0.3s;
+        }
+        .social-btn.done { border-color: #00ff00; color: #00ff00; opacity: 0.6; }
 
         .mining-zone { margin-top: 10px; min-height: 100px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.03); }
         .farm-btn { background: #ff0000; color: #fff; border: none; padding: 12px 20px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; display: none; }
@@ -51,55 +57,28 @@
         .progress-bar { width: 85%; height: 6px; background: #222; margin: 12px auto 0; position: relative; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 0.5s linear; }
         
-        /* --- ОБНОВЛЕННЫЙ NAVBAR --- */
+        /* NAVBAR */
         .navbar { 
-            position: fixed; 
-            bottom: 0; left: 0; 
-            width: 100%; 
-            height: 85px; 
-            background: rgba(0,0,0,0.96); 
-            border-top: 1px solid rgba(255, 0, 0, 0.3); 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            z-index: 10;
-            padding-bottom: 15px; /* Запас для системной полоски на смартфонах */
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; 
+            background: rgba(0,0,0,0.96); border-top: 1px solid rgba(255, 0, 0, 0.3); 
+            display: flex; justify-content: space-around; align-items: center; z-index: 10; padding-bottom: 15px; 
         }
-
         .nav-item { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            color: #550000; /* Цвет неактивного текста */
-            cursor: pointer; 
-            text-transform: uppercase; 
-            font-size: 11px; 
-            font-weight: 900; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 30%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #550000; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 900; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 30%;
         }
+        .nav-item div { padding: 8px 20px; border-radius: 30px; transition: all 0.3s ease; }
+        .nav-item.active { color: #000; }
+        .nav-item.active div { background: #ffffff; color: #000000; padding: 8px 30px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); transform: scale(1.05); }
 
-        /* Текст внутри неактивной кнопки */
-        .nav-item div {
-            padding: 8px 20px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
+        /* TOAST NOTIFICATION */
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; padding: 10px 20px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; z-index: 100; display: none;
+            box-shadow: 0 0 15px rgba(255,255,255,0.4);
         }
-
-        /* СТИЛЬ АКТИВНОЙ КНОПКИ (БЕЛАЯ КАПСУЛА) */
-        .nav-item.active {
-            color: #000; /* Черный текст на белом фоне */
-        }
-
-        .nav-item.active div {
-            background: #ffffff; /* Чистый белый цвет */
-            color: #000000;
-            padding: 8px 30px; /* Размеры капсулы */
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Белое неоновое свечение */
-            transform: scale(1.05); /* Легкое увеличение */
-        }
-        /* -------------------------- */
 
         .task-card { background: rgba(255,255,255,0.05); border-left: 3px solid #ff0000; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
         .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; width: 70%;}
@@ -114,6 +93,7 @@
     </style>
 </head>
 <body>
+    <div id="toast"></div>
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
@@ -122,12 +102,14 @@
                 <div id="username" class="user-name">...</div>
                 <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
                 <div class="balance"><span id="main-balance">...</span> <span class="token-name">$BPC XP</span></div>
+                
                 <div class="social-grid">
-                    <div class="social-btn" onclick="forceOpen('https://x.com/beatspromc')">X</div>
-                    <div class="social-btn" onclick="forceOpen('https://www.instagram.com/beatsprom')">IG</div>
-                    <div class="social-btn" onclick="forceOpen('https://youtube.com/@beatsprom')">YT</div>
-                    <div class="social-btn" onclick="forceOpen('https://www.tiktok.com/@bpcrypt')">TT</div>
+                    <div id="btn-x" class="social-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">X</div>
+                    <div id="btn-ig" class="social-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">IG</div>
+                    <div id="btn-yt" class="social-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">YT</div>
+                    <div id="btn-tt" class="social-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">TT</div>
                 </div>
+
                 <div class="mining-zone">
                     <div id="loading-text">CONNECTING...</div>
                     <button id="farm-btn" class="farm-btn" onclick="startFarming()">Start Production</button>
@@ -193,12 +175,40 @@
 
     document.getElementById('username').innerText = userName;
 
+    function showToast(text) {
+        const t = document.getElementById('toast');
+        t.innerText = text;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
     function showTab(tabId, el) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.getElementById('tab-' + tabId).classList.add('active');
         el.classList.add('active');
         if(tabId === 'top') loadLeaderboard();
+    }
+
+    // Социальные задания
+    function handleSocial(platform, url) {
+        const userRef = database.ref('users/' + userId);
+        userRef.once('value').then(snap => {
+            const data = snap.val();
+            const taskKey = 'task_' + platform;
+            
+            tg.openLink(url);
+
+            if (!data[taskKey]) {
+                userRef.update({
+                    [taskKey]: true,
+                    balance: (data.balance || 0) + 500
+                }).then(() => {
+                    showToast("+500 XP FOR " + platform.toUpperCase());
+                    document.getElementById('btn-' + platform).classList.add('done');
+                });
+            }
+        });
     }
 
     function generateRefLink() {
@@ -212,7 +222,7 @@
         const linkInput = document.getElementById('ref-link');
         linkInput.select();
         navigator.clipboard.writeText(linkInput.value);
-        tg.showAlert("Link copied!");
+        showToast("LINK COPIED!");
     }
 
     function loadLeaderboard() {
@@ -245,18 +255,19 @@
             
             if (!data) {
                 const newUser = { 
-                    name: userName, 
-                    balance: 500, 
-                    startTime: "null",
-                    invitedBy: referrerId || "none",
-                    rewardGiven: false 
+                    name: userName, balance: 500, startTime: "null",
+                    invitedBy: referrerId || "none", rewardGiven: false,
+                    task_x: false, task_ig: false, task_yt: false, task_tt: false
                 };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
+                // Подсвечиваем уже выполненные кнопки
+                if(data.task_x) document.getElementById('btn-x').classList.add('done');
+                if(data.task_ig) document.getElementById('btn-ig').classList.add('done');
+                if(data.task_yt) document.getElementById('btn-yt').classList.add('done');
+                if(data.task_tt) document.getElementById('btn-tt').classList.add('done');
                 updateUI(data);
             }
-        }).catch(err => {
-            document.getElementById('loading-text').innerText = "ERROR CONNECTING";
         });
 
         userRef.on('value', (snapshot) => {
@@ -275,18 +286,14 @@
 
     function startFarming() {
         const userRef = database.ref('users/' + userId);
-        
         userRef.once('value').then((snap) => {
             const userData = snap.val();
             if (userData && userData.invitedBy && userData.invitedBy !== "none" && !userData.rewardGiven) {
                 const rId = userData.invitedBy;
                 if (rId !== userId) {
-                    const refUserBalanceRef = database.ref('users/' + rId + '/balance');
-                    refUserBalanceRef.transaction((currentBalance) => {
-                        return (currentBalance || 0) + 2500;
-                    });
+                    database.ref('users/' + rId + '/balance').transaction(b => (b || 0) + 2500);
                     userRef.update({ rewardGiven: true });
-                    tg.showAlert("Welcome! Your friend received 2500 XP bonus!");
+                    showToast("FRIEND BONUS +2500 XP APPLIED!");
                 }
             }
             userRef.update({ startTime: Date.now() });
@@ -297,52 +304,38 @@
         document.getElementById('farm-btn').style.display = 'none';
         document.getElementById('mining-info').style.display = 'block';
         if (farmInterval) clearInterval(farmInterval);
-        
         farmInterval = setInterval(() => {
-            const now = Date.now();
-            const elapsed = now - startTime;
+            const elapsed = Date.now() - startTime;
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
-            
             document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
-            
-            const h = Math.floor(timeLeft / 3600000);
-            const m = Math.floor((timeLeft % 3600000) / 60000);
-            const s = Math.floor((timeLeft % 60000) / 1000);
+            const h = Math.floor(timeLeft / 3600000), m = Math.floor((timeLeft % 3600000) / 60000), s = Math.floor((timeLeft % 60000) / 1000);
             document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            
-            if (elapsed >= FARM_DURATION) {
-                clearInterval(farmInterval);
-                showClaimButton();
-            }
+            if (elapsed >= FARM_DURATION) { clearInterval(farmInterval); showClaimButton(); }
         }, 1000);
     }
 
     function showClaimButton() {
         document.getElementById('mining-info').style.display = 'none';
         const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = "CLAIM PRODUCTION";
+        btn.style.display = 'block'; btn.innerText = "CLAIM PRODUCTION";
         btn.onclick = () => {
             database.ref('users/' + userId).once('value').then(s => {
-                const currentBalance = s.val().balance || 0;
+                const cur = s.val().balance || 0;
                 database.ref('users/' + userId).update({ 
-                    balance: currentBalance + (FARM_DURATION/1000 * REWARD_PER_SEC), 
-                    startTime: "null" 
+                    balance: cur + (FARM_DURATION/1000 * REWARD_PER_SEC), startTime: "null" 
                 });
+                showToast("PRODUCTION CLAIMED!");
             });
         };
     }
 
     function showStartButton() {
         const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block';
-        btn.innerText = "START PRODUCTION";
+        btn.style.display = 'block'; btn.innerText = "START PRODUCTION";
         document.getElementById('mining-info').style.display = 'none';
         btn.onclick = startFarming;
     }
-
-    function forceOpen(url) { tg.openLink(url); }
 
     initApp();
 </script>
