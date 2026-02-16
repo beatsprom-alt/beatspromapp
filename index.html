@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beatsprom Family</title>
+    <title>Beatsprom V3</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -18,14 +18,8 @@
             align-items: center; justify-content: flex-start;
             height: 100vh; overflow: hidden;
         }
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); z-index: 1;
-        }
-        .content {
-            position: relative; z-index: 2; text-align: center; width: 85%;
-            margin-top: 10vh; flex-grow: 1;
-        }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; }
+        .content { position: relative; z-index: 2; text-align: center; width: 85%; margin-top: 10vh; flex-grow: 1; }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -39,7 +33,9 @@
         }
         .user-name { font-size: 24px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
         .label-text { font-size: 10px; color: #ffffff; letter-spacing: 2px; font-weight: bold; }
-        .balance { font-size: 42px; color: #fff; margin: 5px 0; font-weight: bold; }
+        
+        /* Изменил цвет баланса на ЗЕЛЕНЫЙ для теста */
+        .balance { font-size: 42px; color: #00ff00; margin: 5px 0; font-weight: bold; }
         .token-name { color: #ff0000; font-size: 18px; }
 
         .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
@@ -49,7 +45,7 @@
             font-size: 9px; cursor: pointer; text-decoration: none; 
             text-align: center; transition: 0.3s;
         }
-        .social-btn.done { border-color: #00ff00; color: #00ff00; opacity: 0.6; }
+        .social-btn.done { border-color: #00ff00 !important; color: #00ff00 !important; }
 
         .mining-zone { margin-top: 10px; min-height: 100px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.03); }
         .farm-btn { background: #ff0000; color: #fff; border: none; padding: 12px 20px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; display: none; }
@@ -57,7 +53,6 @@
         .progress-bar { width: 85%; height: 6px; background: #222; margin: 12px auto 0; position: relative; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 0.5s linear; }
         
-        /* NAVBAR */
         .navbar { 
             position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; 
             background: rgba(0,0,0,0.96); border-top: 1px solid rgba(255, 0, 0, 0.3); 
@@ -65,31 +60,21 @@
         }
         .nav-item { 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #550000; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 900; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 30%;
+            color: #550000; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: 900; width: 30%;
         }
-        .nav-item div { padding: 8px 20px; border-radius: 30px; transition: all 0.3s ease; }
+        .nav-item div { padding: 8px 20px; border-radius: 30px; }
         .nav-item.active { color: #000; }
-        .nav-item.active div { background: #ffffff; color: #000000; padding: 8px 30px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); transform: scale(1.05); }
+        .nav-item.active div { background: #ffffff; color: #000000; padding: 8px 30px; }
 
-        /* TOAST NOTIFICATION */
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: #fff; color: #000; padding: 10px 20px; border-radius: 20px;
+            background: #00ff00; color: #000; padding: 10px 20px; border-radius: 20px;
             font-size: 12px; font-weight: bold; z-index: 100; display: none;
-            box-shadow: 0 0 15px rgba(255,255,255,0.4);
         }
 
         .task-card { background: rgba(255,255,255,0.05); border-left: 3px solid #ff0000; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
-        .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; outline: none; width: 70%;}
+        .ref-input { flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid #ff0000; color: #fff; padding: 10px; font-size: 9px; font-family: inherit; width: 70%;}
         .copy-btn { background: #ff0000; border: none; padding: 10px 12px; cursor: pointer; color: white; }
-
-        .leader-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-size: 12px; }
-        .leader-name { color: #fff; }
-        .leader-score { color: #ff0000; font-weight: bold; }
-
-        #loading-text { font-size: 10px; color: #666; animation: blink 1.5s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -102,6 +87,7 @@
                 <div id="username" class="user-name">...</div>
                 <div class="label-text" style="font-size: 9px; margin-top: 10px;">SECURED ASSETS:</div>
                 <div class="balance"><span id="main-balance">...</span> <span class="token-name">$BPC XP</span></div>
+                <div style="font-size: 8px; color: #00ff00; margin-top: -5px;">SYSTEM UPDATED V3</div>
                 
                 <div class="social-grid">
                     <div id="btn-x" class="social-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">X</div>
@@ -166,19 +152,16 @@
     const database = firebase.database();
     const tg = window.Telegram.WebApp;
     tg.ready();
-    tg.expand();
 
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
     const startParam = tg.initDataUnsafe?.start_param;
-    const referrerId = startParam ? String(startParam) : null; 
 
     document.getElementById('username').innerText = userName;
 
     function showToast(text) {
         const t = document.getElementById('toast');
-        t.innerText = text;
-        t.style.display = 'block';
+        t.innerText = text; t.style.display = 'block';
         setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
@@ -190,7 +173,6 @@
         if(tabId === 'top') loadLeaderboard();
     }
 
-    // Социальные задания
     function handleSocial(platform, url) {
         const userRef = database.ref('users/' + userId);
         userRef.once('value').then(snap => {
@@ -204,18 +186,13 @@
                     [taskKey]: true,
                     balance: (data.balance || 0) + 500
                 }).then(() => {
-                    showToast("+500 XP FOR " + platform.toUpperCase());
+                    showToast("+500 XP SECURED!");
                     document.getElementById('btn-' + platform).classList.add('done');
                 });
+            } else {
+                showToast("ALREADY CLAIMED");
             }
         });
-    }
-
-    function generateRefLink() {
-        const botUsername = "Beatsprombot"; 
-        const appShortName = "app"; 
-        const link = `https://t.me/${botUsername}/${appShortName}?startapp=${userId}`;
-        document.getElementById('ref-link').value = link;
     }
 
     function copyRefLink() {
@@ -246,33 +223,22 @@
     let farmInterval;
 
     function initApp() {
-        generateRefLink();
-        const userRef = database.ref('users/' + userId);
+        const botUsername = "Beatsprombot";
+        document.getElementById('ref-link').value = `https://t.me/${botUsername}/app?startapp=${userId}`;
         
+        const userRef = database.ref('users/' + userId);
         userRef.once('value').then((snapshot) => {
             const data = snapshot.val();
             document.getElementById('loading-text').style.display = 'none';
-            
             if (!data) {
-                const newUser = { 
-                    name: userName, balance: 500, startTime: "null",
-                    invitedBy: referrerId || "none", rewardGiven: false,
-                    task_x: false, task_ig: false, task_yt: false, task_tt: false
-                };
+                const newUser = { name: userName, balance: 500, startTime: "null", invitedBy: startParam || "none", task_x: false, task_ig: false, task_yt: false, task_tt: false };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
-                // Подсвечиваем уже выполненные кнопки
-                if(data.task_x) document.getElementById('btn-x').classList.add('done');
-                if(data.task_ig) document.getElementById('btn-ig').classList.add('done');
-                if(data.task_yt) document.getElementById('btn-yt').classList.add('done');
-                if(data.task_tt) document.getElementById('btn-tt').classList.add('done');
+                ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) document.getElementById('btn-'+p).classList.add('done'); });
                 updateUI(data);
             }
         });
-
-        userRef.on('value', (snapshot) => {
-            if (snapshot.exists()) updateUI(snapshot.val());
-        });
+        userRef.on('value', snap => { if(snap.exists()) updateUI(snap.val()); });
     }
 
     function updateUI(data) {
@@ -285,19 +251,7 @@
     }
 
     function startFarming() {
-        const userRef = database.ref('users/' + userId);
-        userRef.once('value').then((snap) => {
-            const userData = snap.val();
-            if (userData && userData.invitedBy && userData.invitedBy !== "none" && !userData.rewardGiven) {
-                const rId = userData.invitedBy;
-                if (rId !== userId) {
-                    database.ref('users/' + rId + '/balance').transaction(b => (b || 0) + 2500);
-                    userRef.update({ rewardGiven: true });
-                    showToast("FRIEND BONUS +2500 XP APPLIED!");
-                }
-            }
-            userRef.update({ startTime: Date.now() });
-        });
+        database.ref('users/' + userId).update({ startTime: Date.now() });
     }
 
     function resumeFarming(startTime) {
@@ -309,8 +263,6 @@
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
             document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
-            const h = Math.floor(timeLeft / 3600000), m = Math.floor((timeLeft % 3600000) / 60000), s = Math.floor((timeLeft % 60000) / 1000);
-            document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             if (elapsed >= FARM_DURATION) { clearInterval(farmInterval); showClaimButton(); }
         }, 1000);
     }
@@ -318,14 +270,12 @@
     function showClaimButton() {
         document.getElementById('mining-info').style.display = 'none';
         const btn = document.getElementById('farm-btn');
-        btn.style.display = 'block'; btn.innerText = "CLAIM PRODUCTION";
+        btn.style.display = 'block'; btn.innerText = "CLAIM XP";
         btn.onclick = () => {
             database.ref('users/' + userId).once('value').then(s => {
                 const cur = s.val().balance || 0;
-                database.ref('users/' + userId).update({ 
-                    balance: cur + (FARM_DURATION/1000 * REWARD_PER_SEC), startTime: "null" 
-                });
-                showToast("PRODUCTION CLAIMED!");
+                database.ref('users/' + userId).update({ balance: cur + 288, startTime: "null" });
+                showToast("XP CLAIMED!");
             });
         };
     }
