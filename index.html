@@ -14,71 +14,110 @@
             background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
             background-size: cover;
             color: #fff;
-            /* Изменили основной шрифт на Montserrat */
             font-family: 'Montserrat', sans-serif;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start;
+            align-items: center; 
+            /* Изменено: теперь контент центрируется по вертикали */
+            justify-content: center; 
             height: 100vh; overflow: hidden;
         }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
-        .content { position: relative; z-index: 2; text-align: center; width: 90%; margin-top: 6vh; flex-grow: 1; overflow-y: auto; padding-bottom: 100px; }
+        
+        /* Изменено: убрали лишние отступы сверху, центрируем содержимое */
+        .content { 
+            position: relative; 
+            z-index: 2; 
+            text-align: center; 
+            width: 90%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            padding-bottom: 80px; /* Оставляем место для нижнего меню */
+        }
+
         .tab-content { display: none; width: 100%; }
-        .tab-content.active { display: block; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .status-box {
             border: 1px solid #ff0000;
-            padding: 20px 10px;
+            padding: 30px 15px; /* Увеличили внутренние отступы для солидности */
             background: rgba(0, 0, 0, 0.9);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-            margin-bottom: 15px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.25);
+            margin-bottom: 0;
         }
-        .user-name { font-size: 20px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: 800; }
-        .label-text { font-size: 10px; color: #aaaaaa; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
         
-        /* Исправленный баланс: плотный шрифт и без лишних пробелов */
+        .user-name { font-size: 18px; color: #ff0000; margin-bottom: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .label-text { font-size: 9px; color: #888; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+        
         .balance { 
-            font-size: 52px; 
+            font-size: 56px; 
             color: #ff0000; 
             margin: 5px 0; 
             font-weight: 800; 
-            text-shadow: 0 0 15px rgba(255,0,0,0.5);
-            letter-spacing: -1px; /* Сближаем цифры еще сильнее */
+            text-shadow: 0 0 20px rgba(255,0,0,0.4);
+            letter-spacing: -2px;
         }
-        .token-name { color: #fff; font-size: 18px; margin-left: 5px; vertical-align: middle; }
+        .token-name { color: #fff; font-size: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: 0; }
 
-        /* Таймер на моноширинном, чтобы цифры не «прыгали» при смене */
-        .timer-text { font-family: 'Roboto Mono', monospace; font-size: 22px; margin-top: 10px; color: #ff0000; font-weight: bold; }
+        .mining-zone { 
+            margin-top: 25px; 
+            padding: 20px 0;
+            min-height: 160px; 
+            border-top: 1px solid #222; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .timer-text { font-family: 'Roboto Mono', monospace; font-size: 24px; margin-top: 12px; color: #ff0000; font-weight: bold; }
 
-        .mining-zone { margin-top: 20px; min-height: 150px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.7); }
-        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 18px; font-family: 'Montserrat', sans-serif; font-weight: 800; cursor: pointer; text-transform: uppercase; width: 85%; font-size: 14px; letter-spacing: 1px; }
-        .progress-bar { width: 85%; height: 6px; background: #222; margin: 15px auto 0; overflow: hidden; border-radius: 3px; }
+        .farm-btn { 
+            background: #ff0000; 
+            color: #fff; 
+            border: none; 
+            padding: 20px; 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 800; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            width: 90%; 
+            font-size: 14px; 
+            letter-spacing: 1.5px;
+            transition: 0.2s;
+        }
+        .farm-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+        .progress-bar { width: 90%; height: 4px; background: #222; margin: 20px auto 0; overflow: hidden; border-radius: 2px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
 
+        /* Темы для других вкладок (задания и топ) */
         .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .task-info { display: flex; flex-direction: column; }
-        .task-title { font-size: 12px; font-weight: bold; color: #fff; }
+        .task-title { font-size: 11px; font-weight: bold; color: #fff; }
         .task-reward { font-size: 10px; color: #ff0000; margin-top: 4px; }
-        .task-action-btn { background: #ff0000; color: #fff; border: none; padding: 8px 15px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .task-action-btn { background: #ff0000; color: #fff; border: none; padding: 8px 15px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .task-action-btn.done { background: transparent; border: 1px solid #00ff00; color: #00ff00; }
 
-        .ref-box { background: rgba(255,0,0,0.05); border: 1px dashed #ff0000; padding: 15px; margin-top: 15px; }
-        .ref-input-group { display: flex; margin-top: 10px; background: #000; border: 1px solid #444; }
-        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; width: 60%; font-family: 'Roboto Mono', monospace; }
+        .ref-box { background: rgba(255,0,0,0.05); border: 1px dashed #444; padding: 15px; margin-top: 15px; }
+        .ref-input-group { display: flex; margin-top: 10px; background: #000; border: 1px solid #333; }
+        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; font-family: 'Roboto Mono', monospace; }
         .copy-btn { background: #ff0000; border: none; padding: 10px; cursor: pointer; color: #fff; font-weight: bold; }
 
-        .leader-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #222; background: rgba(0,0,0,0.4); }
-        .leader-rank { width: 35px; color: #666; font-weight: bold; font-size: 14px; }
-        .leader-name { flex-grow: 1; text-align: left; color: #fff; font-size: 14px; }
+        .leader-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #222; }
+        .leader-rank { width: 35px; color: #555; font-weight: bold; }
+        .leader-name { flex-grow: 1; text-align: left; color: #fff; font-size: 13px; }
         .leader-score { color: #ff0000; font-weight: bold; font-family: 'Roboto Mono', monospace; }
 
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #333; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 10px; font-weight: 800; width: 33%; }
         .nav-item div { padding: 10px 0; width: 100%; text-align: center; }
         .nav-item.active { color: #fff; }
-        .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
+        .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
 
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: bold; z-index: 1000; display: none; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: 800; z-index: 1000; display: none; }
     </style>
 </head>
 <body>
@@ -87,9 +126,10 @@
     <div class="content">
         <div id="tab-home" class="tab-content active">
             <div class="status-box">
-                <div class="label-text">IDENTIFIED MEMBER:</div>
+                <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
-                <div class="label-text" style="margin-top: 15px;">TOTAL ASSETS:</div>
+                
+                <div class="label-text" style="margin-top: 20px;">TOTAL XP ASSETS</div>
                 <div class="balance"><span id="main-balance">0</span><span class="token-name">XP</span></div>
                 
                 <div class="mining-zone">
@@ -105,14 +145,14 @@
         </div>
 
         <div id="tab-tasks" class="tab-content">
-            <div class="status-box">
-                <div class="user-name">TASKS</div>
+            <div class="status-box" style="text-align: center;">
+                <div class="user-name">AVAILABLE MISSIONS</div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW TIKTOK</span><span class="task-reward">+500 XP</span></div><button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">START</button></div>
                 <div class="ref-box">
-                    <div class="label-text">INVITE FRIENDS (+2500 XP)</div>
+                    <div class="label-text">REFERRAL LINK (+2500 XP)</div>
                     <div class="ref-input-group">
                         <input type="text" id="ref-link" class="ref-input" readonly value="Generating...">
                         <button class="copy-btn" onclick="copyRefLink()">COPY</button>
@@ -123,8 +163,10 @@
 
         <div id="tab-top" class="tab-content">
             <div class="status-box">
-                <div class="user-name">TOP INFLUENCE</div>
-                <div id="leaderboard-list"><div class="label-text" style="padding: 20px;">SYNCING...</div></div>
+                <div class="user-name">GLOBAL LEADERBOARD</div>
+                <div id="leaderboard-list">
+                    <div class="label-text" style="padding: 20px;">FETCHING DATA...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -228,7 +270,6 @@
     }
 
     function updateUI(data) {
-        // Убрали toLocaleString(), чтобы не было пробела в числе 5864
         document.getElementById('main-balance').innerText = Math.floor(data.balance || 0);
         if (data.startTime && data.startTime !== "null") {
             const elapsed = Date.now() - data.startTime;
