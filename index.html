@@ -17,13 +17,11 @@
             font-family: 'Montserrat', sans-serif;
             display: flex; flex-direction: column;
             align-items: center; 
-            /* Изменено: теперь контент центрируется по вертикали */
             justify-content: center; 
             height: 100vh; overflow: hidden;
         }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         
-        /* Изменено: убрали лишние отступы сверху, центрируем содержимое */
         .content { 
             position: relative; 
             z-index: 2; 
@@ -33,7 +31,7 @@
             flex-direction: column;
             justify-content: center;
             flex-grow: 1;
-            padding-bottom: 80px; /* Оставляем место для нижнего меню */
+            padding-bottom: 80px; 
         }
 
         .tab-content { display: none; width: 100%; }
@@ -42,7 +40,7 @@
 
         .status-box {
             border: 1px solid #ff0000;
-            padding: 30px 15px; /* Увеличили внутренние отступы для солидности */
+            padding: 30px 15px;
             background: rgba(0, 0, 0, 0.9);
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.25);
             margin-bottom: 0;
@@ -93,7 +91,14 @@
         .progress-bar { width: 90%; height: 4px; background: #222; margin: 20px auto 0; overflow: hidden; border-radius: 2px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
 
-        /* Темы для других вкладок (задания и топ) */
+        /* Roadmap Styles */
+        .roadmap-list { text-align: left; margin-top: 20px; }
+        .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
+        .roadmap-item.active { border-left-color: #ff0000; }
+        .roadmap-item.active::after { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 10px #ff0000; }
+        .rm-title { font-size: 12px; font-weight: 800; color: #ff0000; text-transform: uppercase; }
+        .rm-desc { font-size: 10px; color: #aaa; margin-top: 4px; line-height: 1.4; }
+
         .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .task-info { display: flex; flex-direction: column; }
         .task-title { font-size: 11px; font-weight: bold; color: #fff; }
@@ -112,7 +117,7 @@
         .leader-score { color: #ff0000; font-weight: bold; font-family: 'Roboto Mono', monospace; }
 
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 10px; font-weight: 800; width: 33%; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 9px; font-weight: 800; width: 25%; }
         .nav-item div { padding: 10px 0; width: 100%; text-align: center; }
         .nav-item.active { color: #fff; }
         .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
@@ -128,10 +133,8 @@
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
-                
                 <div class="label-text" style="margin-top: 20px;">TOTAL XP ASSETS</div>
                 <div class="balance"><span id="main-balance">0</span><span class="token-name">XP</span></div>
-                
                 <div class="mining-zone">
                     <div id="loading-text" class="label-text">CONNECTING TO NODE...</div>
                     <button id="farm-btn" class="farm-btn" style="display:none;" onclick="startFarming()">Start Production</button>
@@ -146,7 +149,7 @@
 
         <div id="tab-tasks" class="tab-content">
             <div class="status-box" style="text-align: center;">
-                <div class="user-name">AVAILABLE MISSIONS</div>
+                <div class="user-name">MISSIONS</div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
@@ -163,9 +166,29 @@
 
         <div id="tab-top" class="tab-content">
             <div class="status-box">
-                <div class="user-name">GLOBAL LEADERBOARD</div>
+                <div class="user-name">LEADERBOARD</div>
                 <div id="leaderboard-list">
-                    <div class="label-text" style="padding: 20px;">FETCHING DATA...</div>
+                    <div class="label-text" style="padding: 20px;">FETCHING...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-roadmap" class="tab-content">
+            <div class="status-box">
+                <div class="user-name">ROADMAP</div>
+                <div class="roadmap-list">
+                    <div class="roadmap-item active">
+                        <div class="rm-title">1. Farming Phase</div>
+                        <div class="rm-desc">Активный сбор XP комьюнити и привлечение первых артистов.</div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="rm-title">2. Token Listing</div>
+                        <div class="rm-desc">Выход токена на биржи и конвертация накопленных баллов.</div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="rm-title">3. Music Marketplace</div>
+                        <div class="rm-desc">Запуск площадки для продажи битов и музыки за крипту.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,6 +198,7 @@
         <div class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
         <div class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
         <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
+        <div class="nav-item" onclick="showTab('roadmap', this)"><div>ROADMAP</div></div>
     </div>
 
 <script>
@@ -319,4 +343,3 @@
 </script>
 </body>
 </html>
-
