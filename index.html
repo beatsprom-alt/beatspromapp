@@ -91,7 +91,6 @@
         .progress-bar { width: 90%; height: 4px; background: #222; margin: 20px auto 0; overflow: hidden; border-radius: 2px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
 
-        /* Roadmap Styles */
         .roadmap-list { text-align: left; margin-top: 20px; }
         .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
         .roadmap-item.active { border-left-color: #ff0000; }
@@ -130,11 +129,16 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px;">
+                <span style="font-size: 8px; color: #00ff00; letter-spacing: 1px;">● NODE ONLINE</span>
+                <span style="font-size: 8px; color: #555; letter-spacing: 1px;">V1.0.4-PROD</span>
+            </div>
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
                 <div class="label-text" style="margin-top: 20px;">TOTAL XP ASSETS</div>
                 <div class="balance"><span id="main-balance">0</span><span class="token-name">XP</span></div>
+                <div style="font-size: 8px; color: #444; margin-bottom: 15px;">DISTRIBUTED MUSIC NETWORK PHASE 01</div>
                 <div class="mining-zone">
                     <div id="loading-text" class="label-text">CONNECTING TO NODE...</div>
                     <button id="farm-btn" class="farm-btn" style="display:none;" onclick="startFarming()">Start Production</button>
@@ -143,6 +147,14 @@
                         <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
                         <div id="timer" class="timer-text">08:00:00</div>
                     </div>
+                </div>
+            </div>
+            <div style="margin-top: 25px; opacity: 0.3;">
+                <div style="font-size: 7px; color: #888; letter-spacing: 2px; margin-bottom: 8px;">POWERED BY</div>
+                <div style="display: flex; justify-content: center; gap: 20px; font-weight: 800; font-size: 9px; color: #fff;">
+                    <span>TON</span>
+                    <span>FIREBASE</span>
+                    <span>BEATSPROM</span>
                 </div>
             </div>
         </div>
@@ -187,7 +199,7 @@
                     </div>
                     <div class="roadmap-item">
                         <div class="rm-title">Phase 03: Music Marketplace</div>
-                        <div class="rm-desc">Launch of the decentralized platform for beats and music licensing. 0% fees for artists using native token.</div>
+                        <div class="rm-desc">Launch of the decentralized platform for beats and music licensing. 0% fees for artists.</div>
                     </div>
                 </div>
             </div>
@@ -198,7 +210,7 @@
         <div class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
         <div class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
         <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
-        <div class="nav-item" onclick="showTab('roadmap', this)"><div>ROADMAP</div></div>
+        <div class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
     </div>
 
 <script>
