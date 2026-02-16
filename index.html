@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beatsprom Family</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -13,7 +14,8 @@
             background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
             background-size: cover;
             color: #fff;
-            font-family: 'Courier New', Courier, monospace;
+            /* Изменили основной шрифт на Montserrat */
+            font-family: 'Montserrat', sans-serif;
             display: flex; flex-direction: column;
             align-items: center; justify-content: flex-start;
             height: 100vh; overflow: hidden;
@@ -31,19 +33,28 @@
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
             margin-bottom: 15px;
         }
-        .user-name { font-size: 22px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
-        .label-text { font-size: 10px; color: #aaaaaa; letter-spacing: 1px; font-weight: bold; text-transform: uppercase; }
-        .balance { font-size: 48px; color: #ff0000; margin: 10px 0; font-weight: bold; text-shadow: 0 0 15px rgba(255,0,0,0.6); }
-        .token-name { color: #fff; font-size: 16px; margin-left: 5px; }
+        .user-name { font-size: 20px; color: #ff0000; margin-bottom: 10px; text-transform: uppercase; font-weight: 800; }
+        .label-text { font-size: 10px; color: #aaaaaa; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+        
+        /* Исправленный баланс: плотный шрифт и без лишних пробелов */
+        .balance { 
+            font-size: 52px; 
+            color: #ff0000; 
+            margin: 5px 0; 
+            font-weight: 800; 
+            text-shadow: 0 0 15px rgba(255,0,0,0.5);
+            letter-spacing: -1px; /* Сближаем цифры еще сильнее */
+        }
+        .token-name { color: #fff; font-size: 18px; margin-left: 5px; vertical-align: middle; }
 
-        /* MINING SECTION */
+        /* Таймер на моноширинном, чтобы цифры не «прыгали» при смене */
+        .timer-text { font-family: 'Roboto Mono', monospace; font-size: 22px; margin-top: 10px; color: #ff0000; font-weight: bold; }
+
         .mining-zone { margin-top: 20px; min-height: 150px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.7); }
-        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 18px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 85%; font-size: 14px; }
-        .timer-text { font-size: 20px; margin-top: 10px; color: #ff0000; font-weight: bold; }
+        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 18px; font-family: 'Montserrat', sans-serif; font-weight: 800; cursor: pointer; text-transform: uppercase; width: 85%; font-size: 14px; letter-spacing: 1px; }
         .progress-bar { width: 85%; height: 6px; background: #222; margin: 15px auto 0; overflow: hidden; border-radius: 3px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
 
-        /* TASKS LIST */
         .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .task-info { display: flex; flex-direction: column; }
         .task-title { font-size: 12px; font-weight: bold; color: #fff; }
@@ -51,21 +62,18 @@
         .task-action-btn { background: #ff0000; color: #fff; border: none; padding: 8px 15px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .task-action-btn.done { background: transparent; border: 1px solid #00ff00; color: #00ff00; }
 
-        /* REF LINK SECTION */
         .ref-box { background: rgba(255,0,0,0.05); border: 1px dashed #ff0000; padding: 15px; margin-top: 15px; }
         .ref-input-group { display: flex; margin-top: 10px; background: #000; border: 1px solid #444; }
-        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; width: 60%; }
+        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; width: 60%; font-family: 'Roboto Mono', monospace; }
         .copy-btn { background: #ff0000; border: none; padding: 10px; cursor: pointer; color: #fff; font-weight: bold; }
 
-        /* LEADERBOARD */
         .leader-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #222; background: rgba(0,0,0,0.4); }
         .leader-rank { width: 35px; color: #666; font-weight: bold; font-size: 14px; }
-        .leader-name { flex-grow: 1; text-align: left; color: #fff; }
-        .leader-score { color: #ff0000; font-weight: bold; }
+        .leader-name { flex-grow: 1; text-align: left; color: #fff; font-size: 14px; }
+        .leader-score { color: #ff0000; font-weight: bold; font-family: 'Roboto Mono', monospace; }
 
-        /* NAVBAR */
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #333; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 10px; font-weight: bold; width: 33%; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 10px; font-weight: 800; width: 33%; }
         .nav-item div { padding: 10px 0; width: 100%; text-align: center; }
         .nav-item.active { color: #fff; }
         .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
@@ -99,39 +107,10 @@
         <div id="tab-tasks" class="tab-content">
             <div class="status-box">
                 <div class="user-name">TASKS</div>
-                
-                <div class="task-card">
-                    <div class="task-info">
-                        <span class="task-title">FOLLOW ON X</span>
-                        <span class="task-reward">+500 XP</span>
-                    </div>
-                    <button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button>
-                </div>
-
-                <div class="task-card">
-                    <div class="task-info">
-                        <span class="task-title">FOLLOW ON INSTAGRAM</span>
-                        <span class="task-reward">+500 XP</span>
-                    </div>
-                    <button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button>
-                </div>
-
-                <div class="task-card">
-                    <div class="task-info">
-                        <span class="task-title">SUBSCRIBE YOUTUBE</span>
-                        <span class="task-reward">+500 XP</span>
-                    </div>
-                    <button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button>
-                </div>
-
-                <div class="task-card">
-                    <div class="task-info">
-                        <span class="task-title">FOLLOW TIKTOK</span>
-                        <span class="task-reward">+500 XP</span>
-                    </div>
-                    <button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">START</button>
-                </div>
-
+                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
+                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
+                <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
+                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW TIKTOK</span><span class="task-reward">+500 XP</span></div><button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">START</button></div>
                 <div class="ref-box">
                     <div class="label-text">INVITE FRIENDS (+2500 XP)</div>
                     <div class="ref-input-group">
@@ -145,9 +124,7 @@
         <div id="tab-top" class="tab-content">
             <div class="status-box">
                 <div class="user-name">TOP INFLUENCE</div>
-                <div id="leaderboard-list">
-                    <div class="label-text" style="padding: 20px;">SYNCING...</div>
-                </div>
+                <div id="leaderboard-list"><div class="label-text" style="padding: 20px;">SYNCING...</div></div>
             </div>
         </div>
     </div>
@@ -172,8 +149,7 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+    tg.ready(); tg.expand();
 
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
@@ -205,8 +181,7 @@
                 userRef.update({ [taskKey]: true, balance: (data.balance || 0) + 500 }).then(() => {
                     showToast("+500 XP SECURED!");
                     const btn = document.getElementById('btn-' + platform);
-                    btn.classList.add('done');
-                    btn.innerText = "DONE";
+                    btn.classList.add('done'); btn.innerText = "DONE";
                 });
             } else { showToast("ALREADY CLAIMED"); }
         });
@@ -226,12 +201,7 @@
             let leaders = [];
             snapshot.forEach((child) => { leaders.push(child.val()); });
             leaders.reverse().forEach((leader, index) => {
-                listDiv.innerHTML += `
-                    <div class="leader-item">
-                        <span class="leader-rank">#${index + 1}</span>
-                        <span class="leader-name">${leader.name || 'Anonymous'}</span>
-                        <span class="leader-score">${Math.floor(leader.balance).toLocaleString()} XP</span>
-                    </div>`;
+                listDiv.innerHTML += `<div class="leader-item"><span class="leader-rank">#${index + 1}</span><span class="leader-name">${leader.name || 'Anonymous'}</span><span class="leader-score">${Math.floor(leader.balance)} XP</span></div>`;
             });
         });
     }
@@ -241,9 +211,7 @@
     let farmInterval;
 
     function initApp() {
-        const botUsername = "Beatsprombot";
-        document.getElementById('ref-link').value = `https://t.me/${botUsername}/app?startapp=${userId}`;
-        
+        document.getElementById('ref-link').value = `https://t.me/Beatsprombot/app?startapp=${userId}`;
         const userRef = database.ref('users/' + userId);
         userRef.once('value').then((snapshot) => {
             const data = snapshot.val();
@@ -252,13 +220,7 @@
                 const newUser = { name: userName, balance: 500, startTime: "null", invitedBy: startParam || "none", task_x: false, task_ig: false, task_yt: false, task_tt: false };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
-                ['x', 'ig', 'yt', 'tt'].forEach(p => { 
-                    if(data['task_'+p]) {
-                        const btn = document.getElementById('btn-'+p);
-                        btn.classList.add('done');
-                        btn.innerText = "DONE";
-                    }
-                });
+                ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) { const b = document.getElementById('btn-'+p); b.classList.add('done'); b.innerText = "DONE"; } });
                 updateUI(data);
             }
         });
@@ -266,7 +228,8 @@
     }
 
     function updateUI(data) {
-        document.getElementById('main-balance').innerText = Math.floor(data.balance || 0).toLocaleString();
+        // Убрали toLocaleString(), чтобы не было пробела в числе 5864
+        document.getElementById('main-balance').innerText = Math.floor(data.balance || 0);
         if (data.startTime && data.startTime !== "null") {
             const elapsed = Date.now() - data.startTime;
             if (elapsed >= FARM_DURATION) { showClaimButton(); } 
@@ -274,9 +237,7 @@
         } else { showStartButton(); }
     }
 
-    function startFarming() {
-        database.ref('users/' + userId).update({ startTime: Date.now() });
-    }
+    function startFarming() { database.ref('users/' + userId).update({ startTime: Date.now() }); }
 
     function resumeFarming(startTime) {
         document.getElementById('farm-btn').style.display = 'none';
@@ -287,10 +248,8 @@
             const timeLeft = Math.max(0, FARM_DURATION - elapsed);
             document.getElementById('farm-amount').innerText = ((elapsed / 1000) * REWARD_PER_SEC).toFixed(2);
             document.getElementById('progress-fill').style.width = Math.min(100, (elapsed / FARM_DURATION) * 100) + '%';
-            
             const h = Math.floor(timeLeft / 3600000), m = Math.floor((timeLeft % 3600000) / 60000), s = Math.floor((timeLeft % 60000) / 1000);
             document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-
             if (elapsed >= FARM_DURATION) { clearInterval(farmInterval); showClaimButton(); }
         }, 1000);
     }
