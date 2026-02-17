@@ -35,17 +35,18 @@
             padding-bottom: 80px; 
         }
 
+        /* Контейнер для кнопки кошелька */
+        #ton-connect-btn { 
+            margin: 0 auto 15px;
+            display: flex; 
+            justify-content: center; 
+            min-height: 44px;
+            z-index: 100;
+        }
+
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Контейнер для кнопки кошелька */
-        #ton-connect-btn { 
-            margin-bottom: 15px; 
-            display: flex; 
-            justify-content: center; 
-            min-height: 44px; 
-        }
 
         .status-box {
             border: 1px solid #ff0000;
@@ -156,9 +157,6 @@
                     </div>
                 </div>
             </div>
-            <div style="margin-top: 30px; opacity: 0.3;">
-                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
-            </div>
         </div>
 
         <div id="tab-tasks" class="tab-content">
@@ -195,14 +193,6 @@
                         <div class="rm-title">Phase 01: Deep Farming</div>
                         <div class="rm-desc">Active community building, distribution of early XP assets, and viral growth via referral system.</div>
                     </div>
-                    <div class="roadmap-item">
-                        <div class="rm-title">Phase 02: Token Generation</div>
-                        <div class="rm-desc">TGE, exchange listings, and conversion of accumulated XP into real on-chain assets.</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="rm-title">Phase 03: Music Marketplace</div>
-                        <div class="rm-desc">Launch of the decentralized platform for beats and music licensing. 0% fees for artists.</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -216,7 +206,7 @@
     </div>
 
 <script>
-    // --- TON CONNECT DATA URL ЛОГИКА ---
+    // --- ТОЧНАЯ ИНИЦИАЛИЗАЦИЯ TON CONNECT ---
     async function initTonConnect() {
         const manifest = {
             url: "https://beatspromapp.web.app",
@@ -226,15 +216,19 @@
         const manifestUrl = 'data:application/json,' + encodeURIComponent(JSON.stringify(manifest));
         
         try {
-            const tonConnectUI = new TONConnectUI.TonConnectUI({
+            // Обязательно проверяем, что библиотека загружена
+            if (typeof TonConnectUI === 'undefined') {
+                console.error("Библиотека TON не загружена!");
+                return;
+            }
+            const tonConnectUI = new TonConnectUI.TonConnectUI({
                 manifestUrl: manifestUrl,
                 buttonRootId: 'ton-connect-btn'
             });
         } catch (e) {
-            console.error("TON Connect init error", e);
+            console.error("TON Connect error:", e);
         }
     }
-    initTonConnect();
 
     // --- FIREBASE И ТГ ЛОГИКА ---
     const firebaseConfig = {
@@ -312,6 +306,7 @@
     let farmInterval;
 
     function initApp() {
+        initTonConnect(); // Запускаем кошелек
         document.getElementById('ref-link').value = `https://t.me/Beatsprombot/app?startapp=${userId}`;
         const userRef = database.ref('users/' + userId);
         userRef.once('value').then((snapshot) => {
@@ -374,7 +369,8 @@
         btn.onclick = startFarming;
     }
 
-    initApp();
+    // Запуск всего после загрузки окна
+    window.addEventListener('load', initApp);
 </script>
 </body>
 </html>
