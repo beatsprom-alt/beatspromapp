@@ -38,6 +38,9 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* СТИЛЬ ДЛЯ КНОПКИ КОШЕЛЬКА */
+        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; }
+
         .status-box {
             border: 1px solid #ff0000;
             padding: 30px 15px;
@@ -129,6 +132,9 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
+            
+            <div id="ton-connect-btn"></div>
+
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
@@ -205,6 +211,7 @@
     </div>
 
 <script>
+    // ТВОЙ ОРИГИНАЛЬНЫЙ КОД FIREBASE (БЕЗ ИЗМЕНЕНИЙ)
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -343,6 +350,21 @@
     }
 
     initApp();
+</script>
+
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<script>
+    // Ждем секунду, чтобы основной код успел отработать
+    setTimeout(() => {
+        try {
+            const tonConnectUI = new TONConnectUI.TonConnectUI({
+                manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect-btn'
+            });
+        } catch (e) {
+            console.error("Wallet error:", e);
+        }
+    }, 1000);
 </script>
 </body>
 </html>
