@@ -134,7 +134,7 @@
         <div id="tab-home" class="tab-content active">
             
             <div id="ton-connect-btn">
-                <span id="ton-loading" style="font-size: 8px; color: #333;">INITIALIZING WALLET...</span>
+                <span id="ton-loading" style="font-size: 10px; color: #444; letter-spacing: 1px;">INITIALIZING WALLET...</span>
             </div>
 
             <div class="status-box">
@@ -359,24 +359,27 @@
         if (!container) return;
 
         try {
+            // МЕНЯЕМ НА ПРЯМУЮ ССЫЛКУ С АНТИ-КЭШЕМ
+            const manifestUrl = 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/main/tonconnect-manifest.json?v=' + Date.now();
+            
             const tonConnectUI = new TONConnectUI.TonConnectUI({
-                // Используем файл с твоего домена для обхода CORS
-                manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+                manifestUrl: manifestUrl,
                 buttonRootId: containerId
             });
 
+            // Плавное удаление надписи загрузки
             setTimeout(() => {
                 const loader = document.getElementById('ton-loading');
                 if (loader) {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.remove(), 500);
                 }
-            }, 2500);
+            }, 3000);
             
-            console.log("TON UI Loaded");
+            console.log("TON UI Loaded with GitHub source");
         } catch (err) {
             console.error("TON Init Error:", err);
-            document.getElementById('ton-loading').innerText = "ERROR LOADING WALLET";
+            document.getElementById('ton-loading').innerText = "CONNECTION ERROR";
         }
     }
 
