@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beatsprom Family</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
     <style>
         body {
             margin: 0; padding: 0;
@@ -59,6 +62,13 @@
         }
         .token-name { color: #fff; font-size: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: 0; }
 
+        /* Контейнер для кнопки кошелька */
+        #ton-connect-btn {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
         .mining-zone { 
             margin-top: 25px; 
             padding: 20px 0;
@@ -91,13 +101,6 @@
         .progress-bar { width: 90%; height: 4px; background: #222; margin: 20px auto 0; overflow: hidden; border-radius: 2px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
 
-        .roadmap-list { text-align: left; margin-top: 20px; }
-        .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
-        .roadmap-item.active { border-left-color: #ff0000; }
-        .roadmap-item.active::after { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 10px #ff0000; }
-        .rm-title { font-size: 12px; font-weight: 800; color: #ff0000; text-transform: uppercase; }
-        .rm-desc { font-size: 10px; color: #aaa; margin-top: 4px; line-height: 1.4; }
-
         .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .task-info { display: flex; flex-direction: column; }
         .task-title { font-size: 11px; font-weight: bold; color: #fff; }
@@ -129,6 +132,9 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
+            
+            <div id="ton-connect-btn"></div>
+
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
@@ -144,9 +150,6 @@
                         <div id="timer" class="timer-text">08:00:00</div>
                     </div>
                 </div>
-            </div>
-            <div style="margin-top: 30px; opacity: 0.3;">
-                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
             </div>
         </div>
 
@@ -182,15 +185,7 @@
                 <div class="roadmap-list">
                     <div class="roadmap-item active">
                         <div class="rm-title">Phase 01: Deep Farming</div>
-                        <div class="rm-desc">Active community building, distribution of early XP assets, and viral growth via referral system.</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="rm-title">Phase 02: Token Generation</div>
-                        <div class="rm-desc">TGE, exchange listings, and conversion of accumulated XP into real on-chain assets.</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="rm-title">Phase 03: Music Marketplace</div>
-                        <div class="rm-desc">Launch of the decentralized platform for beats and music licensing. 0% fees for artists.</div>
+                        <div class="rm-desc">Active community building, distribution of early XP assets.</div>
                     </div>
                 </div>
             </div>
@@ -225,6 +220,12 @@
     const startParam = tg.initDataUnsafe?.start_param;
 
     document.getElementById('username').innerText = userName;
+
+    // ИНИЦИАЛИЗАЦИЯ КОШЕЛЬКА
+    const tonConnectUI = new TONConnectUI.TonConnectUI({
+        manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect-btn'
+    });
 
     function showToast(text) {
         const t = document.getElementById('toast');
