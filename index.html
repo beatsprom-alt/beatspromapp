@@ -38,9 +38,6 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* СТИЛЬ ДЛЯ КНОПКИ КОШЕЛЬКА */
-        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; min-height: 44px; align-items: center; }
-
         .status-box {
             border: 1px solid #ff0000;
             padding: 30px 15px;
@@ -132,11 +129,6 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
-            
-            <div id="ton-connect-btn">
-                <span id="ton-loading" style="font-size: 10px; color: #444; letter-spacing: 1px;">INITIALIZING WALLET...</span>
-            </div>
-
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
@@ -152,6 +144,9 @@
                         <div id="timer" class="timer-text">08:00:00</div>
                     </div>
                 </div>
+            </div>
+            <div style="margin-top: 30px; opacity: 0.3;">
+                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
             </div>
         </div>
 
@@ -204,13 +199,12 @@
 
     <div class="navbar">
         <div class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
-        <div class="nav-item" onclick="showTab('tasks', this)"><div>MISSIONS</div></div>
+        <div class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
         <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
         <div class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
     </div>
 
 <script>
-    // --- FIREBASE И ТГ ЛОГИКА ---
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -349,45 +343,6 @@
     }
 
     initApp();
-</script>
-
-<script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
-<script>
-    async function forceInitWallet() {
-        const containerId = 'ton-connect-btn';
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        try {
-            // МЕНЯЕМ НА ПРЯМУЮ ССЫЛКУ С АНТИ-КЭШЕМ
-            const manifestUrl = 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/main/tonconnect-manifest.json?v=' + Date.now();
-            
-            const tonConnectUI = new TONConnectUI.TonConnectUI({
-                manifestUrl: manifestUrl,
-                buttonRootId: containerId
-            });
-
-            // Плавное удаление надписи загрузки
-            setTimeout(() => {
-                const loader = document.getElementById('ton-loading');
-                if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 500);
-                }
-            }, 3000);
-            
-            console.log("TON UI Loaded with GitHub source");
-        } catch (err) {
-            console.error("TON Init Error:", err);
-            document.getElementById('ton-loading').innerText = "CONNECTION ERROR";
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        window.addEventListener('load', forceInitWallet);
-    } else {
-        forceInitWallet();
-    }
 </script>
 </body>
 </html>
