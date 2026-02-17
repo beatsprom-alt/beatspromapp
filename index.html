@@ -213,7 +213,6 @@
     </div>
 
 <script>
-    // КОНФИГ FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -360,20 +359,31 @@
         if (typeof TONConnectUI !== 'undefined') {
             try {
                 const tonConnectUI = new TONConnectUI.TonConnectUI({
-                    manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+                    // ИСПОЛЬЗУЕМ ТВОЮ ПРЯМУЮ ССЫЛКУ С GITHUB
+                    manifestUrl: 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/refs/heads/main/tonconnect-manifest.json',
                     buttonRootId: 'ton-connect-btn'
                 });
-                const loader = document.getElementById('ton-loading');
-                if(loader) loader.style.display = 'none';
+
+                // Таймер для проверки, отрисовалась ли кнопка
+                const checkInterval = setInterval(() => {
+                    const btnContainer = document.getElementById('ton-connect-btn');
+                    // Если внутри контейнера появилось что-то кроме нашего текста, значит кнопка готова
+                    if (btnContainer && btnContainer.children.length > 1) {
+                        const loader = document.getElementById('ton-loading');
+                        if (loader) loader.style.display = 'none';
+                        clearInterval(checkInterval);
+                    }
+                }, 300);
+
             } catch (err) {
                 console.error("Wallet error:", err);
+                document.getElementById('ton-loading').innerText = "CONNECTION ERROR";
             }
         } else {
-            setTimeout(initWallet, 500); // Пробуем снова, если библиотека не докачалась
+            setTimeout(initWallet, 500);
         }
     }
-    // Запускаем инициализацию после загрузки страницы
-    window.addEventListener('load', () => setTimeout(initWallet, 1200));
+    window.addEventListener('load', () => setTimeout(initWallet, 1000));
 </script>
 </body>
 </html>
