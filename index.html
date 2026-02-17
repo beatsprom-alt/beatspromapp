@@ -9,49 +9,119 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        body { margin: 0; padding: 0; background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat; background-size: cover; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        body {
+            margin: 0; padding: 0;
+            background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
+            background-size: cover;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            display: flex; flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; overflow: hidden;
+        }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
-        .content { position: relative; z-index: 2; text-align: center; width: 90%; display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-bottom: 80px; }
+        
+        .content { 
+            position: relative; 
+            z-index: 2; 
+            text-align: center; 
+            width: 90%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            padding-bottom: 80px; 
+        }
+
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .status-box { border: 1px solid #ff0000; padding: 30px 15px; background: rgba(0, 0, 0, 0.9); box-shadow: 0 0 30px rgba(255, 0, 0, 0.25); margin-bottom: 0; }
+
+        .status-box {
+            border: 1px solid #ff0000;
+            padding: 30px 15px;
+            background: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.25);
+            margin-bottom: 0;
+        }
+        
         .user-name { font-size: 18px; color: #ff0000; margin-bottom: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
         .label-text { font-size: 9px; color: #888; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
-        .balance { font-size: 56px; color: #ff0000; margin: 5px 0; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.4); letter-spacing: -2px; }
+        
+        .balance { 
+            font-size: 56px; 
+            color: #ff0000; 
+            margin: 5px 0; 
+            font-weight: 800; 
+            text-shadow: 0 0 20px rgba(255,0,0,0.4);
+            letter-spacing: -2px;
+        }
         .token-name { color: #fff; font-size: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: 0; }
-        .mining-zone { margin-top: 25px; padding: 20px 0; min-height: 160px; border-top: 1px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .mining-zone { 
+            margin-top: 25px; 
+            padding: 20px 0;
+            min-height: 160px; 
+            border-top: 1px solid #222; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
         .timer-text { font-family: 'Roboto Mono', monospace; font-size: 24px; margin-top: 12px; color: #ff0000; font-weight: bold; }
-        .farm-btn { background: #ff0000; color: #fff; border: none; padding: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; cursor: pointer; text-transform: uppercase; width: 90%; font-size: 14px; letter-spacing: 1.5px; transition: 0.2s; }
+
+        .farm-btn { 
+            background: #ff0000; 
+            color: #fff; 
+            border: none; 
+            padding: 20px; 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 800; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            width: 90%; 
+            font-size: 14px; 
+            letter-spacing: 1.5px;
+            transition: 0.2s;
+        }
+        .farm-btn:active { transform: scale(0.98); opacity: 0.9; }
+
         .progress-bar { width: 90%; height: 4px; background: #222; margin: 20px auto 0; overflow: hidden; border-radius: 2px; }
         .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
+
+        .roadmap-list { text-align: left; margin-top: 20px; }
+        .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
+        .roadmap-item.active { border-left-color: #ff0000; }
+        .roadmap-item.active::after { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 10px #ff0000; }
+        .rm-title { font-size: 12px; font-weight: 800; color: #ff0000; text-transform: uppercase; }
+        .rm-desc { font-size: 10px; color: #aaa; margin-top: 4px; line-height: 1.4; }
+
         .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .task-info { display: flex; flex-direction: column; }
         .task-title { font-size: 11px; font-weight: bold; color: #fff; }
         .task-reward { font-size: 10px; color: #ff0000; margin-top: 4px; }
         .task-action-btn { background: #ff0000; color: #fff; border: none; padding: 8px 15px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .task-action-btn.done { background: transparent; border: 1px solid #00ff00; color: #00ff00; }
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 9px; font-weight: 800; width: 25%; }
-        .nav-item.active { color: #fff; }
-        .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); padding: 10px 0; width: 100%; text-align: center; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: 800; z-index: 1000; display: none; }
-        
-        /* Стиль для кошелька */
-        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; transform: scale(0.9); }
+
         .ref-box { background: rgba(255,0,0,0.05); border: 1px dashed #444; padding: 15px; margin-top: 15px; }
         .ref-input-group { display: flex; margin-top: 10px; background: #000; border: 1px solid #333; }
         .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; font-family: 'Roboto Mono', monospace; }
         .copy-btn { background: #ff0000; border: none; padding: 10px; cursor: pointer; color: #fff; font-weight: bold; }
+
         .leader-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #222; }
         .leader-rank { width: 35px; color: #555; font-weight: bold; }
         .leader-name { flex-grow: 1; text-align: left; color: #fff; font-size: 13px; }
         .leader-score { color: #ff0000; font-weight: bold; font-family: 'Roboto Mono', monospace; }
-        .roadmap-list { text-align: left; margin-top: 20px; }
-        .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
-        .roadmap-item.active { border-left-color: #ff0000; }
-        .rm-title { font-size: 12px; font-weight: 800; color: #ff0000; text-transform: uppercase; }
-        .rm-desc { font-size: 10px; color: #aaa; margin-top: 4px; line-height: 1.4; }
+
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 9px; font-weight: 800; width: 25%; }
+        .nav-item div { padding: 10px 0; width: 100%; text-align: center; }
+        .nav-item.active { color: #fff; }
+        .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: 800; z-index: 1000; display: none; }
     </style>
 </head>
 <body>
@@ -59,8 +129,6 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
-            <div id="ton-connect-btn"></div>
-
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
@@ -76,6 +144,9 @@
                         <div id="timer" class="timer-text">08:00:00</div>
                     </div>
                 </div>
+            </div>
+            <div style="margin-top: 30px; opacity: 0.3;">
+                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
             </div>
         </div>
 
@@ -95,8 +166,35 @@
                 </div>
             </div>
         </div>
-        <div id="tab-top" class="tab-content"><div class="status-box"><div class="user-name">LEADERBOARD</div><div id="leaderboard-list"></div></div></div>
-        <div id="tab-roadmap" class="tab-content"><div class="status-box"><div class="user-name">STRATEGY</div><div class="roadmap-list"><div class="roadmap-item active"><div class="rm-title">Phase 01: Deep Farming</div><div class="rm-desc">Active community building and XP distribution.</div></div></div></div></div>
+
+        <div id="tab-top" class="tab-content">
+            <div class="status-box">
+                <div class="user-name">LEADERBOARD</div>
+                <div id="leaderboard-list">
+                    <div class="label-text" style="padding: 20px;">FETCHING...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-roadmap" class="tab-content">
+            <div class="status-box">
+                <div class="user-name">STRATEGY</div>
+                <div class="roadmap-list">
+                    <div class="roadmap-item active">
+                        <div class="rm-title">Phase 01: Deep Farming</div>
+                        <div class="rm-desc">Active community building, distribution of early XP assets, and viral growth via referral system.</div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="rm-title">Phase 02: Token Generation</div>
+                        <div class="rm-desc">TGE, exchange listings, and conversion of accumulated XP into real on-chain assets.</div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="rm-title">Phase 03: Music Marketplace</div>
+                        <div class="rm-desc">Launch of the decentralized platform for beats and music licensing. 0% fees for artists.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="navbar">
@@ -105,8 +203,6 @@
         <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
         <div class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
     </div>
-
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <script>
     const firebaseConfig = {
@@ -130,42 +226,48 @@
 
     document.getElementById('username').innerText = userName;
 
-    // Инициализация TON Connect с защитой от ошибок
-    let tonConnectUI;
-    try {
-        tonConnectUI = new TONConnectUI.TonConnectUI({
-            manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect-btn'
-        });
-        tonConnectUI.onStatusChange(wallet => {
-            if (wallet) {
-                database.ref('users/' + userId).update({ wallet: wallet.account.address });
-                showToast("WALLET CONNECTED");
-            }
-        });
-    } catch(e) { console.log("TON Connect waiting..."); }
+    function showToast(text) {
+        const t = document.getElementById('toast');
+        t.innerText = text; t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
 
-    function showToast(text) { const t = document.getElementById('toast'); t.innerText = text; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 2500); }
-    function showTab(tabId, el) { document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active')); document.getElementById('tab-' + tabId).classList.add('active'); el.classList.add('active'); if(tabId === 'top') loadLeaderboard(); }
+    function showTab(tabId, el) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        el.classList.add('active');
+        if(tabId === 'top') loadLeaderboard();
+    }
 
     function handleSocial(platform, url) {
         const userRef = database.ref('users/' + userId);
         userRef.once('value').then(snap => {
-            const data = snap.val(); const taskKey = 'task_' + platform; tg.openLink(url);
+            const data = snap.val();
+            const taskKey = 'task_' + platform;
+            tg.openLink(url);
             if (!data[taskKey]) {
                 userRef.update({ [taskKey]: true, balance: (data.balance || 0) + 500 }).then(() => {
                     showToast("+500 XP SECURED!");
-                    const btn = document.getElementById('btn-' + platform); btn.classList.add('done'); btn.innerText = "DONE";
+                    const btn = document.getElementById('btn-' + platform);
+                    btn.classList.add('done'); btn.innerText = "DONE";
                 });
             } else { showToast("ALREADY CLAIMED"); }
         });
     }
 
-    function copyRefLink() { const linkInput = document.getElementById('ref-link'); linkInput.select(); navigator.clipboard.writeText(linkInput.value); showToast("LINK COPIED!"); }
+    function copyRefLink() {
+        const linkInput = document.getElementById('ref-link');
+        linkInput.select();
+        navigator.clipboard.writeText(linkInput.value);
+        showToast("LINK COPIED!");
+    }
 
     function loadLeaderboard() {
         database.ref('users').orderByChild('balance').limitToLast(15).once('value', (snapshot) => {
-            const listDiv = document.getElementById('leaderboard-list'); listDiv.innerHTML = ''; let leaders = [];
+            const listDiv = document.getElementById('leaderboard-list');
+            listDiv.innerHTML = '';
+            let leaders = [];
             snapshot.forEach((child) => { leaders.push(child.val()); });
             leaders.reverse().forEach((leader, index) => {
                 listDiv.innerHTML += `<div class="leader-item"><span class="leader-rank">#${index + 1}</span><span class="leader-name">${leader.name || 'Anonymous'}</span><span class="leader-score">${Math.floor(leader.balance)} XP</span></div>`;
@@ -198,7 +300,8 @@
         document.getElementById('main-balance').innerText = Math.floor(data.balance || 0);
         if (data.startTime && data.startTime !== "null") {
             const elapsed = Date.now() - data.startTime;
-            if (elapsed >= FARM_DURATION) { showClaimButton(); } else { resumeFarming(data.startTime); }
+            if (elapsed >= FARM_DURATION) { showClaimButton(); } 
+            else { resumeFarming(data.startTime); }
         } else { showStartButton(); }
     }
 
