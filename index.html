@@ -39,7 +39,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* СТИЛЬ ДЛЯ КНОПКИ КОШЕЛЬКА */
-        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; min-height: 44px; }
+        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; min-height: 44px; align-items: center; }
 
         .status-box {
             border: 1px solid #ff0000;
@@ -153,9 +153,6 @@
                     </div>
                 </div>
             </div>
-            <div style="margin-top: 30px; opacity: 0.3;">
-                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
-            </div>
         </div>
 
         <div id="tab-tasks" class="tab-content">
@@ -207,12 +204,13 @@
 
     <div class="navbar">
         <div class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
-        <div class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
+        <div class="nav-item" onclick="showTab('tasks', this)"><div>MISSIONS</div></div>
         <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
         <div class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
     </div>
 
 <script>
+    // --- FIREBASE И ТГ ЛОГИКА ---
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -353,37 +351,40 @@
     initApp();
 </script>
 
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
 <script>
-    function initWallet() {
-        if (typeof TONConnectUI !== 'undefined') {
-            try {
-                const tonConnectUI = new TONConnectUI.TonConnectUI({
-                    // ИСПОЛЬЗУЕМ ТВОЮ ПРЯМУЮ ССЫЛКУ С GITHUB
-                    manifestUrl: 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/refs/heads/main/tonconnect-manifest.json',
-                    buttonRootId: 'ton-connect-btn'
-                });
+    async function forceInitWallet() {
+        const containerId = 'ton-connect-btn';
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-                // Таймер для проверки, отрисовалась ли кнопка
-                const checkInterval = setInterval(() => {
-                    const btnContainer = document.getElementById('ton-connect-btn');
-                    // Если внутри контейнера появилось что-то кроме нашего текста, значит кнопка готова
-                    if (btnContainer && btnContainer.children.length > 1) {
-                        const loader = document.getElementById('ton-loading');
-                        if (loader) loader.style.display = 'none';
-                        clearInterval(checkInterval);
-                    }
-                }, 300);
+        try {
+            const tonConnectUI = new TONConnectUI.TonConnectUI({
+                // Используем файл с твоего домена для обхода CORS
+                manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+                buttonRootId: containerId
+            });
 
-            } catch (err) {
-                console.error("Wallet error:", err);
-                document.getElementById('ton-loading').innerText = "CONNECTION ERROR";
-            }
-        } else {
-            setTimeout(initWallet, 500);
+            setTimeout(() => {
+                const loader = document.getElementById('ton-loading');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 500);
+                }
+            }, 2500);
+            
+            console.log("TON UI Loaded");
+        } catch (err) {
+            console.error("TON Init Error:", err);
+            document.getElementById('ton-loading').innerText = "ERROR LOADING WALLET";
         }
     }
-    window.addEventListener('load', () => setTimeout(initWallet, 1000));
+
+    if (document.readyState === 'loading') {
+        window.addEventListener('load', forceInitWallet);
+    } else {
+        forceInitWallet();
+    }
 </script>
 </body>
 </html>
