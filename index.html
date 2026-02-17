@@ -39,7 +39,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* СТИЛЬ ДЛЯ КНОПКИ КОШЕЛЬКА */
-        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; }
+        #ton-connect-btn { margin-bottom: 15px; display: flex; justify-content: center; min-height: 44px; }
 
         .status-box {
             border: 1px solid #ff0000;
@@ -133,7 +133,9 @@
     <div class="content">
         <div id="tab-home" class="tab-content active">
             
-            <div id="ton-connect-btn"></div>
+            <div id="ton-connect-btn">
+                <span id="ton-loading" style="font-size: 8px; color: #333;">INITIALIZING WALLET...</span>
+            </div>
 
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
@@ -211,7 +213,7 @@
     </div>
 
 <script>
-    // ТВОЙ ОРИГИНАЛЬНЫЙ КОД FIREBASE (БЕЗ ИЗМЕНЕНИЙ)
+    // КОНФИГ FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -354,17 +356,24 @@
 
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 <script>
-    // Ждем секунду, чтобы основной код успел отработать
-    setTimeout(() => {
-        try {
-            const tonConnectUI = new TONConnectUI.TonConnectUI({
-                manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
-                buttonRootId: 'ton-connect-btn'
-            });
-        } catch (e) {
-            console.error("Wallet error:", e);
+    function initWallet() {
+        if (typeof TONConnectUI !== 'undefined') {
+            try {
+                const tonConnectUI = new TONConnectUI.TonConnectUI({
+                    manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+                    buttonRootId: 'ton-connect-btn'
+                });
+                const loader = document.getElementById('ton-loading');
+                if(loader) loader.style.display = 'none';
+            } catch (err) {
+                console.error("Wallet error:", err);
+            }
+        } else {
+            setTimeout(initWallet, 500); // Пробуем снова, если библиотека не докачалась
         }
-    }, 1000);
+    }
+    // Запускаем инициализацию после загрузки страницы
+    window.addEventListener('load', () => setTimeout(initWallet, 1200));
 </script>
 </body>
 </html>
