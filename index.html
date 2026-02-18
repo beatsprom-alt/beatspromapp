@@ -1,218 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beatsprom Family</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <style>
-        body {
-            margin: 0; padding: 0;
-            background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
-            background-size: cover;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; overflow: hidden;
-        }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
-        
-        .content { 
-            position: relative; 
-            z-index: 2; 
-            text-align: center; 
-            width: 90%; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex-grow: 1;
-            padding-bottom: 80px; 
-        }
-
-        .tab-content { display: none; width: 100%; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Контейнер для кнопки TON */
-        #ton-connect-btn {
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .status-box {
-            border: 1px solid #ff0000;
-            padding: 30px 15px;
-            background: rgba(0, 0, 0, 0.9);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.25);
-            margin-bottom: 0;
-        }
-        
-        .user-name { font-size: 18px; color: #ff0000; margin-bottom: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .label-text { font-size: 9px; color: #888; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
-        
-        .balance { 
-            font-size: 56px; 
-            color: #ff0000; 
-            margin: 5px 0; 
-            font-weight: 800; 
-            text-shadow: 0 0 20px rgba(255,0,0,0.4);
-            letter-spacing: -2px;
-        }
-        .token-name { color: #fff; font-size: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: 0; }
-
-        .mining-zone { 
-            margin-top: 25px; 
-            padding: 20px 0;
-            min-height: 160px; 
-            border-top: 1px solid #222; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        
-        .timer-text { font-family: 'Roboto Mono', monospace; font-size: 24px; margin-top: 12px; color: #ff0000; font-weight: bold; }
-
-        .farm-btn { 
-            background: #ff0000; 
-            color: #fff; 
-            border: none; 
-            padding: 20px; 
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 800; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            width: 90%; 
-            font-size: 14px; 
-            letter-spacing: 1.5px;
-            transition: 0.2s;
-        }
-        .farm-btn:active { transform: scale(0.98); opacity: 0.9; }
-
-        .progress-bar { width: 90%; height: 4px; background: #222; margin: 20px auto 0; overflow: hidden; border-radius: 2px; }
-        .progress-fill { height: 100%; background: #ff0000; width: 0%; transition: width 1s linear; }
-
-        .roadmap-list { text-align: left; margin-top: 20px; }
-        .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
-        .roadmap-item.active { border-left-color: #ff0000; }
-        .roadmap-item.active::after { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #ff0000; border-radius: 50%; box-shadow: 0 0 10px #ff0000; }
-        .rm-title { font-size: 12px; font-weight: 800; color: #ff0000; text-transform: uppercase; }
-        .rm-desc { font-size: 10px; color: #aaa; margin-top: 4px; line-height: 1.4; }
-
-        .task-card { background: rgba(15,15,15,0.95); border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-        .task-info { display: flex; flex-direction: column; }
-        .task-title { font-size: 11px; font-weight: bold; color: #fff; }
-        .task-reward { font-size: 10px; color: #ff0000; margin-top: 4px; }
-        .task-action-btn { background: #ff0000; color: #fff; border: none; padding: 8px 15px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .task-action-btn.done { background: transparent; border: 1px solid #00ff00; color: #00ff00; }
-
-        .ref-box { background: rgba(255,0,0,0.05); border: 1px dashed #444; padding: 15px; margin-top: 15px; }
-        .ref-input-group { display: flex; margin-top: 10px; background: #000; border: 1px solid #333; }
-        .ref-input { flex-grow: 1; background: transparent; border: none; color: #fff; padding: 10px; font-size: 10px; outline: none; font-family: 'Roboto Mono', monospace; }
-        .copy-btn { background: #ff0000; border: none; padding: 10px; cursor: pointer; color: #fff; font-weight: bold; }
-
-        .leader-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid #222; }
-        .leader-rank { width: 35px; color: #555; font-weight: bold; }
-        .leader-name { flex-grow: 1; text-align: left; color: #fff; font-size: 13px; }
-        .leader-score { color: #ff0000; font-weight: bold; font-family: 'Roboto Mono', monospace; }
-
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; cursor: pointer; font-size: 9px; font-weight: 800; width: 25%; }
-        .nav-item div { padding: 10px 0; width: 100%; text-align: center; }
-        .nav-item.active { color: #fff; }
-        .nav-item.active div { background: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
-
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: 800; z-index: 1000; display: none; }
-    </style>
-</head>
-<body>
-    <div id="toast"></div>
-    <div class="overlay"></div>
-    <div class="content">
-        <div id="tab-home" class="tab-content active">
-            <div id="ton-connect-btn"></div>
-
-            <div class="status-box">
-                <div class="label-text">MEMBER IDENTIFIED</div>
-                <div id="username" class="user-name">...</div>
-                <div class="label-text" style="margin-top: 20px;">TOTAL XP ASSETS</div>
-                <div class="balance"><span id="main-balance">0</span><span class="token-name">XP</span></div>
-                <div style="font-size: 8px; color: #444; margin-bottom: 15px;">DISTRIBUTED MUSIC NETWORK PHASE 01</div>
-                <div class="mining-zone">
-                    <div id="loading-text" class="label-text">CONNECTING...</div>
-                    <button id="farm-btn" class="farm-btn" style="display:none;" onclick="startFarming()">Start Production</button>
-                    <div id="mining-info" style="display:none; width: 100%;">
-                        <div class="label-text">PRODUCING: <span id="farm-amount" style="color:#fff">0.00</span></div>
-                        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-                        <div id="timer" class="timer-text">08:00:00</div>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top: 30px; opacity: 0.3;">
-                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
-            </div>
-        </div>
-
-        <div id="tab-tasks" class="tab-content">
-            <div class="status-box" style="text-align: center;">
-                <div class="user-name">MISSIONS</div>
-                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
-                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
-                <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
-                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW TIKTOK</span><span class="task-reward">+500 XP</span></div><button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">START</button></div>
-                <div class="ref-box">
-                    <div class="label-text">REFERRAL LINK (+2500 XP)</div>
-                    <div class="ref-input-group">
-                        <input type="text" id="ref-link" class="ref-input" readonly value="Generating...">
-                        <button class="copy-btn" onclick="copyRefLink()">COPY</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-top" class="tab-content">
-            <div class="status-box">
-                <div class="user-name">LEADERBOARD</div>
-                <div id="leaderboard-list">
-                    <div class="label-text" style="padding: 20px;">FETCHING...</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-roadmap" class="tab-content">
-            <div class="status-box">
-                <div class="user-name">STRATEGY</div>
-                <div class="roadmap-list">
-                    <div class="roadmap-item active">
-                        <div class="rm-title">Phase 01: Deep Farming</div>
-                        <div class="rm-desc">Active community building, distribution of early XP assets, and viral growth via referral system.</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="rm-title">Phase 02: Token Generation</div>
-                        <div class="rm-desc">TGE, exchange listings, and conversion of accumulated XP into real on-chain assets.</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="rm-title">Phase 03: Music Marketplace</div>
-                        <div class="rm-desc">Launch of the decentralized platform for beats and music licensing. 0% fees for artists.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="navbar">
-        <div class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
-        <div class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
-        <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
-        <div class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
-    </div>
+/* ЗАМЕНИ СВОЙ БЛОК <script> В КОНЦЕ ФАЙЛА НА ЭТОТ */
 
 <script>
     const firebaseConfig = {
@@ -240,6 +26,19 @@
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/main/tonconnect-manifest.json',
         buttonRootId: 'ton-connect-btn'
+    });
+
+    // ЛОГИКА СОХРАНЕНИЯ КОШЕЛЬКА В FIREBASE
+    tonConnectUI.onStatusChange(wallet => {
+        if (wallet) {
+            const address = wallet.account.address;
+            database.ref('users/' + userId).update({
+                walletAddress: address
+            }).then(() => {
+                console.log("Wallet linked:", address);
+                showToast("WALLET LINKED TO PROFILE");
+            });
+        }
     });
 
     function showToast(text) {
@@ -302,7 +101,14 @@
             const data = snapshot.val();
             document.getElementById('loading-text').style.display = 'none';
             if (!data) {
-                const newUser = { name: userName, balance: 500, startTime: "null", invitedBy: startParam || "none", task_x: false, task_ig: false, task_yt: false, task_tt: false };
+                const newUser = { 
+                    name: userName, 
+                    balance: 500, 
+                    startTime: "null", 
+                    invitedBy: startParam || "none", 
+                    task_x: false, task_ig: false, task_yt: false, task_tt: false,
+                    walletAddress: "not_connected"
+                };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
                 ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) { const b = document.getElementById('btn-'+p); b.classList.add('done'); b.innerText = "DONE"; } });
@@ -360,5 +166,3 @@
 
     initApp();
 </script>
-</body>
-</html>
