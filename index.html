@@ -101,7 +101,20 @@
         .roadmap-list { text-align: left; margin-top: 20px; }
         .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
         .roadmap-item.active { border-left-color: #ff0000; }
-        .roadmap-item.active::after { content: ''; position: absolute; left: -6px; top: 0; width: 100%; height: 100%; background: #ff0000; border-radius: 50%; box-shadow: 0 0 10px #ff0000; }
+        
+        /* ИСПРАВЛЕННОЕ КРАСНОЕ ПЯТНО */
+        .roadmap-item.active::after { 
+            content: ''; 
+            position: absolute; 
+            left: -6px; 
+            top: 4px; 
+            width: 10px; 
+            height: 10px; 
+            background: #ff0000; 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px #ff0000; 
+        }
+
         .rm-title { font-size: 12px; font-weight: 800; color: #ff0000; text-transform: uppercase; }
         .rm-desc { font-size: 10px; color: #aaa; margin-top: 4px; line-height: 1.4; }
 
@@ -235,13 +248,11 @@
 
     document.getElementById('username').innerText = userName;
 
-    // ИНИЦИАЛИЗАЦИЯ TON CONNECT
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/main/tonconnect-manifest.json',
         buttonRootId: 'ton-connect-btn'
     });
 
-    // СЛУШАТЕЛЬ ПОДКЛЮЧЕНИЯ КОШЕЛЬКА
     tonConnectUI.onStatusChange(wallet => {
         if (wallet) {
             const address = wallet.account.address;
