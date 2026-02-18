@@ -8,6 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         body {
             margin: 0; padding: 0;
@@ -37,6 +38,13 @@
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Контейнер для кнопки TON */
+        #ton-connect-btn {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+        }
 
         .status-box {
             border: 1px solid #ff0000;
@@ -129,6 +137,8 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
+            <div id="ton-connect-btn"></div>
+
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
@@ -225,6 +235,12 @@
     const startParam = tg.initDataUnsafe?.start_param;
 
     document.getElementById('username').innerText = userName;
+
+    // ИНИЦИАЛИЗАЦИЯ TON CONNECT
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://raw.githubusercontent.com/beatsprom-alt/beatspromapp/main/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect-btn'
+    });
 
     function showToast(text) {
         const t = document.getElementById('toast');
