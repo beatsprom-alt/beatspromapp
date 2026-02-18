@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beatsprom Family</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
     <style>
         body {
             margin: 0; padding: 0;
@@ -32,6 +35,13 @@
             justify-content: center;
             flex-grow: 1;
             padding-bottom: 80px; 
+        }
+
+        /* Контейнер для кнопки TON */
+        #ton-connect-btn {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
         }
 
         .tab-content { display: none; width: 100%; }
@@ -129,6 +139,8 @@
     <div class="overlay"></div>
     <div class="content">
         <div id="tab-home" class="tab-content active">
+            <div id="ton-connect-btn"></div>
+
             <div class="status-box">
                 <div class="label-text">MEMBER IDENTIFIED</div>
                 <div id="username" class="user-name">...</div>
@@ -205,6 +217,13 @@
     </div>
 
 <script>
+    // --- ПЕРЕМЕННЫЕ ---
+    let tonConnectUI;
+    const FARM_DURATION = 8 * 60 * 60 * 1000;
+    const REWARD_PER_SEC = 0.01;
+    let farmInterval;
+
+    // --- КОНФИГУРАЦИЯ FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyD9cxLlpJjgFcsDvNiGwbuevlvGhFLdLqI",
         authDomain: "beatspromapp.firebaseapp.com",
@@ -218,14 +237,35 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const tg = window.Telegram.WebApp;
-    tg.ready(); tg.expand();
 
+    // --- ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ---
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
     const startParam = tg.initDataUnsafe?.start_param;
 
-    document.getElementById('username').innerText = userName;
+    // --- ИНИЦИАЛИЗАЦИЯ TON CONNECT (по курсу) ---
+    async function initTonConnect() {
+        try {
+            // Ожидаем, пока библиотека будет доступна в window
+            const TonUI = window.TonConnectUI.TonConnectUI;
+            tonConnectUI = new TonUI({
+                manifestUrl: 'https://beatspromapp.web.app/tonconnect-manifest.json',
+                buttonRootId: 'ton-connect-btn'
+            });
 
+            // Слушаем изменения статуса (подключен/отключен)
+            tonConnectUI.onStatusChange(wallet => {
+                if (wallet) {
+                    showToast("WALLET CONNECTED");
+                    console.log("Wallet address:", wallet.account.address);
+                }
+            });
+        } catch (e) {
+            console.error("TON Connect UI error:", e);
+        }
+    }
+
+    // --- ФУНКЦИИ ПРИЛОЖЕНИЯ ---
     function showToast(text) {
         const t = document.getElementById('toast');
         t.innerText = text; t.style.display = 'block';
@@ -243,14 +283,14 @@
     function handleSocial(platform, url) {
         const userRef = database.ref('users/' + userId);
         userRef.once('value').then(snap => {
-            const data = snap.val();
+            const data = snap.val() || {};
             const taskKey = 'task_' + platform;
             tg.openLink(url);
             if (!data[taskKey]) {
                 userRef.update({ [taskKey]: true, balance: (data.balance || 0) + 500 }).then(() => {
                     showToast("+500 XP SECURED!");
                     const btn = document.getElementById('btn-' + platform);
-                    btn.classList.add('done'); btn.innerText = "DONE";
+                    if(btn) { btn.classList.add('done'); btn.innerText = "DONE"; }
                 });
             } else { showToast("ALREADY CLAIMED"); }
         });
@@ -275,12 +315,14 @@
         });
     }
 
-    const FARM_DURATION = 8 * 60 * 60 * 1000;
-    const REWARD_PER_SEC = 0.01;
-    let farmInterval;
-
     function initApp() {
+        tg.ready(); tg.expand();
+        document.getElementById('username').innerText = userName;
         document.getElementById('ref-link').value = `https://t.me/Beatsprombot/app?startapp=${userId}`;
+        
+        // Инициализируем TON Connect
+        initTonConnect();
+
         const userRef = database.ref('users/' + userId);
         userRef.once('value').then((snapshot) => {
             const data = snapshot.val();
@@ -289,7 +331,7 @@
                 const newUser = { name: userName, balance: 500, startTime: "null", invitedBy: startParam || "none", task_x: false, task_ig: false, task_yt: false, task_tt: false };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
-                ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) { const b = document.getElementById('btn-'+p); b.classList.add('done'); b.innerText = "DONE"; } });
+                ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) { const b = document.getElementById('btn-'+p); if(b) { b.classList.add('done'); b.innerText = "DONE"; } } });
                 updateUI(data);
             }
         });
@@ -342,7 +384,8 @@
         btn.onclick = startFarming;
     }
 
-    initApp();
+    // Точка входа
+    window.onload = initApp;
 </script>
 </body>
 </html>
