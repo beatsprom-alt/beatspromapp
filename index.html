@@ -175,6 +175,8 @@
         <div id="tab-tasks" class="tab-content">
             <div class="status-box" style="text-align: center;">
                 <div class="user-name">MISSIONS</div>
+                <div class="task-card"><div class="task-info"><span class="task-title">JOIN TELEGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-tgch" class="task-action-btn" onclick="handleSocial('tgch', 'https://t.me/beatspromcr')">START</button></div>
+                
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
@@ -329,12 +331,12 @@
                     balance: 500, 
                     startTime: "null", 
                     invitedBy: startParam || "none", 
-                    task_x: false, task_ig: false, task_yt: false, task_tt: false,
+                    task_tgch: false, task_x: false, task_ig: false, task_yt: false, task_tt: false,
                     walletAddress: "not_connected"
                 };
                 userRef.set(newUser).then(() => updateUI(newUser));
             } else {
-                ['x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) { const b = document.getElementById('btn-'+p); b.classList.add('done'); b.innerText = "DONE"; } });
+                ['tgch', 'x', 'ig', 'yt', 'tt'].forEach(p => { if(data['task_'+p]) { const b = document.getElementById('btn-'+p); b.classList.add('done'); b.innerText = "DONE"; } });
                 updateUI(data);
             }
         });
