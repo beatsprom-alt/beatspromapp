@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Beatsprom Family</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://tapps.foundation/sdk/google-analytics.js"></script> 
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
@@ -102,7 +105,6 @@
         .roadmap-item { border-left: 2px solid #333; padding-left: 15px; margin-bottom: 20px; position: relative; }
         .roadmap-item.active { border-left-color: #ff0000; }
         
-        /* ИСПРАВЛЕННОЕ КРАСНОЕ ПЯТНО */
         .roadmap-item.active::after { 
             content: ''; 
             position: absolute; 
@@ -167,16 +169,12 @@
                     </div>
                 </div>
             </div>
-            <div style="margin-top: 30px; opacity: 0.3;">
-                <div style="font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 3px;">BEATSPROM</div>
-            </div>
         </div>
 
         <div id="tab-tasks" class="tab-content">
             <div class="status-box" style="text-align: center;">
                 <div class="user-name">MISSIONS</div>
                 <div class="task-card"><div class="task-info"><span class="task-title">JOIN TELEGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-tgch" class="task-action-btn" onclick="handleSocial('tgch', 'https://t.me/beatspromcr')">START</button></div>
-                
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
@@ -222,10 +220,10 @@
     </div>
 
     <div class="navbar">
-        <div class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
-        <div class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
-        <div class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
-        <div class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
+        <div id="nav-home" class="nav-item active" onclick="showTab('home', this)"><div>PROD</div></div>
+        <div id="nav-tasks" class="nav-item" onclick="showTab('tasks', this)"><div>TASKS</div></div>
+        <div id="nav-top" class="nav-item" onclick="showTab('top', this)"><div>TOP</div></div>
+        <div id="nav-roadmap" class="nav-item" onclick="showTab('roadmap', this)"><div>STRATEGY</div></div>
     </div>
 
 <script>
@@ -242,7 +240,10 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const tg = window.Telegram.WebApp;
-    tg.ready(); tg.expand();
+    
+    // Инициализация Mini App
+    tg.ready(); 
+    tg.expand();
 
     const userId = String(tg.initDataUnsafe?.user?.id || "test_user");
     const userName = tg.initDataUnsafe?.user?.first_name || "Member";
@@ -272,12 +273,22 @@
         setTimeout(() => { t.style.display = 'none'; }, 2500);
     }
 
+    // Улучшенная навигация с кнопкой "Назад"
     function showTab(tabId, el) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.getElementById('tab-' + tabId).classList.add('active');
         el.classList.add('active');
+        
         if(tabId === 'top') loadLeaderboard();
+
+        // Управление системной кнопкой "Назад"
+        if (tabId !== 'home') {
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => showTab('home', document.getElementById('nav-home')));
+        } else {
+            tg.BackButton.hide();
+        }
     }
 
     function handleSocial(platform, url) {
