@@ -7,12 +7,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://tganalytics.xyz/index.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        window.tgAnalytics.init({
+            token: 'eyJhcHBfbmFtZSI6ImJlYXRzcHJvbSIsImFwcF91cmwiOiJodHRwczovL3QubWUvQmVhdHNwcm9tYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vYmVhdHNwcm9tLWFsdC5naXRodWIuaW8vYmVhdHNwcm9tYXBwLyJ9!NDiU04sCZjn4/8xOwgv9MfvpRysNfB+i2C4Cq46J3WA=', // ЗАМЕНИ ЭТОТ ТЕКСТ НА СВОЙ КЛЮЧ
+            appIdentifier: 'beatsprom'
+        });
+    </script>
+    
     <script src="https://tapps.foundation/sdk/google-analytics.js"></script> 
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
+        /* Весь твой CSS остается без изменений */
         body {
             margin: 0; padding: 0;
             background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat;
@@ -241,7 +250,6 @@
     const database = firebase.database();
     const tg = window.Telegram.WebApp;
     
-    // Инициализация Mini App
     tg.ready(); 
     tg.expand();
 
@@ -273,7 +281,6 @@
         setTimeout(() => { t.style.display = 'none'; }, 2500);
     }
 
-    // Улучшенная навигация с кнопкой "Назад"
     function showTab(tabId, el) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -282,7 +289,6 @@
         
         if(tabId === 'top') loadLeaderboard();
 
-        // Управление системной кнопкой "Назад"
         if (tabId !== 'home') {
             tg.BackButton.show();
             tg.BackButton.onClick(() => showTab('home', document.getElementById('nav-home')));
