@@ -21,7 +21,6 @@
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
     <style>
-        /* CSS оставлен без изменений */
         body { margin: 0; padding: 0; background: #000 url('bg.jpg?v=final_prod_v1') center center no-repeat; background-size: cover; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1; }
         .content { position: relative; z-index: 2; text-align: center; width: 90%; display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-bottom: 80px; }
@@ -99,7 +98,9 @@
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON X</span><span class="task-reward">+500 XP</span></div><button id="btn-x" class="task-action-btn" onclick="handleSocial('x', 'https://x.com/beatspromc')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW ON INSTAGRAM</span><span class="task-reward">+500 XP</span></div><button id="btn-ig" class="task-action-btn" onclick="handleSocial('ig', 'https://www.instagram.com/beatsprom')">START</button></div>
                 <div class="task-card"><div class="task-info"><span class="task-title">SUBSCRIBE YOUTUBE</span><span class="task-reward">+500 XP</span></div><button id="btn-yt" class="task-action-btn" onclick="handleSocial('yt', 'https://youtube.com/@beatsprom')">START</button></div>
-                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW TIKTOK</span><span class="task-reward">+500 XP</span></div><button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@bpcrypt')">START</button></div>
+                
+                <div class="task-card"><div class="task-info"><span class="task-title">FOLLOW TIKTOK</span><span class="task-reward">+500 XP</span></div><button id="btn-tt" class="task-action-btn" onclick="handleSocial('tt', 'https://www.tiktok.com/@beatspromcrpt?_r=1&_t=ZS-94JyuHqHiJb')">START</button></div>
+                
                 <div class="ref-box">
                     <div class="label-text">REFERRAL LINK (+2500 XP)</div>
                     <div class="ref-input-group">
@@ -148,14 +149,18 @@
     </div>
 
 <script>
-    // --- 2. ИСПРАВЛЕНО: Функция инициализации строго по мануалу ---
+    // Safe Analytics Initialization
     function initAnalytics() {
-        if (window.telegramAnalytics) {
-            window.telegramAnalytics.init({
-                token: 'eyJhcHBfbmFtZSI6ImJlYXRzcHJvbSIsImFwcF91cmwiOiJodHRwczovL3QubWUvQmVhdHNwcm9tYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vYmVhdHNwcm9tLWFsdC5naXRodWIuaW8vYmVhdHNwcm9tYXBwLyJ9!NDiU04sCZjn4/8xOwgv9MfvpRysNfB+i2C4Cq46J3WA=',
-                appName: 'beatsprom' // appName согласно документации
-            });
-            console.log("Telegram Analytics Initialized");
+        try {
+            if (window.telegramAnalytics && typeof window.telegramAnalytics.init === 'function') {
+                window.telegramAnalytics.init({
+                    token: 'eyJhcHBfbmFtZSI6ImJlYXRzcHJvbSIsImFwcF91cmwiOiJodHRwczovL3QubWUvQmVhdHNwcm9tYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vYmVhdHNwcm9tLWFsdC5naXRodWIuaW8vYmVhdHNwcm9tYXBwLyJ9!NDiU04sCZjn4/8xOwgv9MfvpRysNfB+i2C4Cq46J3WA=',
+                    appName: 'beatsprom'
+                });
+                console.log("Telegram Analytics Initialized");
+            }
+        } catch (e) {
+            console.warn("Analytics loading skipped or failed", e);
         }
     }
 
@@ -222,13 +227,13 @@
             const data = snap.val();
             const taskKey = 'task_' + platform;
             tg.openLink(url);
-            if (!data[taskKey]) {
+            if (data && !data[taskKey]) {
                 userRef.update({ [taskKey]: true, balance: (data.balance || 0) + 500 }).then(() => {
                     showToast("+500 XP SECURED!");
                     const btn = document.getElementById('btn-' + platform);
                     btn.classList.add('done'); btn.innerText = "DONE";
                 });
-            } else { showToast("ALREADY CLAIMED"); }
+            } else if (data) { showToast("ALREADY CLAIMED"); }
         });
     }
 
